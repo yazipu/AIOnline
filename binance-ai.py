@@ -13,8 +13,10 @@ copy_key = ""
 copy_secret = ""
 
 virtual_balance_enable = False # 是否启用虚拟余额
-usdt_keep = 500 # 保持现货 USDT 余额
-keep_step = 100 # 每次赎回 USDT 金额
+usdt_keep = 500     # 保持现货 USDT 余额
+keep_step = 100     # 每次赎回 USDT 金额
+fdusd_keep = 150    # 保持现货 FDUSD 余额
+fdusd_step = 50     # 每次赎回 FDUSD 金额
 
 # 现货交易对
 symbols_spot = {
@@ -22,15 +24,16 @@ symbols_spot = {
     'ETHUSDT': { 'buy_value': 980, 'trade_amount': 17 },
     'BNBUSDT': { 'buy_value': 200, 'trade_amount': 11,'vb':0 },
     # 'SOLUSDT': { 'buy_value': 390, 'trade_amount': 11 },
+    # 'TRXUSDT': { 'buy_value': 190, 'trade_amount': 11 },
     # 'XRPUSDT': { 'buy_value': 190, 'trade_amount': 11 },
 }
 # 带单交易对
 symbols_copy = {
-    'BTCUSDT': { 'buy_value': 990, 'trade_amount': 11,'vb':0 },
-    'ETHUSDT': { 'buy_value': 490, 'trade_amount': 11,'vb':0 },
-    'SOLUSDT': { 'buy_value': 390, 'trade_amount': 11 },
-    'BNBUSDT': { 'buy_value': 290, 'trade_amount': 11 },
-    'XRPUSDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'BTCUSDT': { 'buy_value': 990, 'trade_amount': 21,'vb':0 },
+    'ETHUSDT': { 'buy_value': 490, 'trade_amount': 15,'vb':0 },
+    # 'SOLUSDT': { 'buy_value': 390, 'trade_amount': 12 },
+    # 'BNBUSDT': { 'buy_value': 290, 'trade_amount': 11 },
+    # 'XRPUSDT': { 'buy_value': 190, 'trade_amount': 11 },
 }
 
 # 截断小数，不四舍五入
@@ -157,10 +160,9 @@ while True:
         # 查询现货余额
         account_info = client.get_account()
         balance_list = account_info["balances"]
-        # {'asset': 'BTC', 'free': '0.00700006', 'locked': '0.00000000'}
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"现货数量:", len(balance_list), "是否带单", copy)
         
-        # 查询未配置现货
+        # 查询未配置现货余额
         for balance in balance_list:
             coin_balance = round(float(balance['free']), 2)
             if coin_balance == 0 or balance["asset"] in ["USDT", "FDUSD", "LDUSDT", "LDFDUSD", "LDUSDC"]: continue
@@ -185,10 +187,7 @@ while True:
                 coin = symbol[:-5] if "FDUSD" in symbol else symbol[:-4]
                 if flexible['asset'] == coin: exist = True; break
             if exist == False: print(flexible['asset'], "理财", coin_balance, "未配置！")
-        # {'totalAmount': '1119.60828181', 'latestAnnualPercentageRate': '0.00067838', 'asset': '1INCH', 'canRedeem': True,
-        # 'collateralAmount': '0', 'productId': '1INCH001', 'yesterdayRealTimeRewards': '0.00167915', 'cumulativeBonusRewards': '0',
-        # 'cumulativeRealTimeRewards': '0.51598181', 'cumulativeTotalRewards': '0.51598181', 'autoSubscribe': True}
-        print(time.strftime("%Y-%m-%d %H:%M:%S"), f"理财数量:", len(flexible_list)) # , flexible_list[0])
+        print(time.strftime("%Y-%m-%d %H:%M:%S"), f"理财数量:", len(flexible_list))
 
         # https://binance-docs.github.io/apidocs/spot/cn/#5393cd07b4
         ticker_list = client.get_orderbook_tickers()
@@ -197,8 +196,6 @@ while True:
         if len(ticker_list) < 100: time.sleep(5); continue
 
         # 检查BNB现货余额，用于支付交易手续费
-        # bnb_balance = client.get_asset_balance(asset="BNB")
-        # bnb_info = get_simple_earn_flexible_position("BNB", 1, 100, copy)
         bnb_balance = next((data for data in balance_list if data["asset"] == "BNB"), {"free":0})
         bnb_info = next((data for data in flexible_list if data["asset"] == "BNB"), {"totalAmount":0})
         bnb_flexible = float(bnb_info["totalAmount"]) # if bnb_info.get("rows") else 0.0
@@ -222,7 +219,6 @@ while True:
         # 检查FDUSD现货余额
         fdusd_balance = float(next((data["free"] for data in balance_list if data["asset"] == "FDUSD"), 0))
         fdusd_flexible = float(next((data["totalAmount"] for data in flexible_list if data["asset"] == "FDUSD"), 0))
-        fdusd_keep = 150; fdusd_step = 50
         if not copy:
             if float(fdusd_balance) < fdusd_keep and fdusd_flexible >= fdusd_step:
                 result = redeem_simple_earn_flexible_product("FDUSD001", fdusd_step, copy)
@@ -312,7 +308,6 @@ while True:
             if sell_price > 0 and sell_value <= values['buy_value'] and values['buy_value'] > 0:
                 quantity = str(round(values['trade_amount'] / sell_price, precision)); order = None
                 print(time.strftime("%Y-%m-%d %H:%M:%S"), f"买入 {quantity} {coin}，市价为 {sell_price} {currency}")
-                # currency_balance = float(client.get_asset_balance(asset=currency)["free"])
                 currency_balance = fdusd_balance if currency == "FDUSD" else usdt_balance
                 if currency_balance >= values['trade_amount']:
                     order = client.order_market_buy(symbol=symbol, quantity=quantity)
