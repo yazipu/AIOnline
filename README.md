@@ -21,7 +21,7 @@
     python okx-ai.py                   OKX 欧易交易所（现货+现货带单）
   
 ####  未完成:
-    python bybit-ai.py                 Bybit 交易所（现货）
+    python bybit-ai.py                 Bybit 拜特交易所（现货）
     python htx-ai.py                   HTX 火币交易所（现货）
     python mexc-ai.py                  MEXC 抹茶交易所（现货）
     
@@ -52,4 +52,4 @@
     坚持投资，积累财富，持续盈利，扭转人生！
     小跌小买，中跌中买，大跌大买，极跌极买，
     小涨小卖，中涨中卖，大涨大卖，极涨极卖！
-    DCA 囤现货，持货待涨，迎接大牛！
+    DCA 囤现货，用爱神交易策略，一起穿越牛熊！
