@@ -20,16 +20,16 @@ symbols = {
 }
 
 # 设置不同市场的时区
-eastern = pytz.timezone('America/New_York')
-hong_kong = pytz.timezone('Asia/Hong_Kong')
-china = pytz.timezone('Asia/Shanghai')
+eastern = pytz.timezone('America/New_York') # 纽约
+hong_kong = pytz.timezone('Asia/Hong_Kong') # 香港
+china = pytz.timezone('Asia/Shanghai')      # 中国
 
 # 获取不同市场的交易日历
-nyse = mcal.get_calendar('NYSE')
-hkex = mcal.get_calendar('HKEX')
+nyse = mcal.get_calendar('NYSE')    # 美股
+hkex = mcal.get_calendar('HKEX')    # 港股
 
 # 上海证券交易所日历，用于 A 股
-cndata = mcal.get_calendar('XSHG')
+cndata = mcal.get_calendar('XSHG')  # A股
 
 def get_market_status(market):
     """
@@ -95,7 +95,7 @@ def get_available_funds():
             return float(item.value)
     return 0.0  # 如果未找到，返回0
 
-# 乱序遍历持仓
+# 乱序遍历持仓，低买高卖
 def manage_positions(positions, symbols, market_status):
     # 获取所有键，然后乱序
     keys = list(symbols.keys())
@@ -164,7 +164,6 @@ def manage_positions(positions, symbols, market_status):
                 print(f"市价买入 {quantity} 股的 {symbol}，价格: {ask_price}，金额：{truncate(required_funds, 2)}。")
                 order = MarketOrder('BUY', quantity) # order = LimitOrder("BUY", quantity, ask_price)
                 trade = ib.placeOrder(Stock(symbol, 'SMART', 'USD'), order)
-                # while not trade.isDone():
                 ib.waitOnUpdate(); ib.sleep(1)
                 # print("trade", trade)
             else:
@@ -178,11 +177,10 @@ def manage_positions(positions, symbols, market_status):
             print(f"市价卖出 {quantity} 股的 {symbol}，价格: {bid_price}，金额：{truncate(bid_price * quantity, 2)}。")
             order = MarketOrder('SELL', quantity) # order = LimitOrder("SELL", quantity, bid_price)
             trade = ib.placeOrder(Stock(symbol, 'SMART', 'USD'), order)
-            # while not trade.isDone():
             ib.waitOnUpdate(); ib.sleep(1)
             # print("trade", trade)
 
-# 循环获取持仓
+# 循环获取持仓，低买高卖
 try:
     while True:
         try:
@@ -191,11 +189,7 @@ try:
             # 获取账户余额信息
             account_summary = ib.accountSummary()
 
-            # 打印账户信息
-            # for item in account_summary: print(f"{item.tag}: {item.value}")
-
             # 简单获取美元可用余额和总市值
-            # account_id = next((item.value for item in account_summary if item.tag == 'AccountId'), "")
             available_funds = next((item.value for item in account_summary if item.tag == 'AvailableFunds' and item.currency == 'USD'), 0)
             net_liquidation = next((item.value for item in account_summary if item.tag == 'NetLiquidation' and item.currency == 'USD'), 0)
 
@@ -211,15 +205,13 @@ try:
             if market_status["US"] or market_status["HK"] or market_status["CN"]:
                 # 获取当前持仓
                 positions = ib.positions()
-                # orders = ib.openOrders(); trades = ib.openTrades()
-                # print(orders); print(trades)
 
                 # 调用管理函数
                 manage_positions(positions, symbols, market_status)
         except Exception as e:
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
         finally:
-            # 休息 5 分钟
+            # 休息时间
             time.sleep(300)
         
 except KeyboardInterrupt:
