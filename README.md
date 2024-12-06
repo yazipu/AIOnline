@@ -4,7 +4,7 @@
     低卖高卖，始终保持【固定金额】仓位。
     
 ## 美股：
-    pip install ibkr.cmd                安装 IBKR 所需类库
+    pip install ib-insync               安装 IBKR 所需类库
     python ibkr-ai.py                   IBKR 盈透证券
 
 ## A股：
