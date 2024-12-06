@@ -7,11 +7,11 @@
     pip install ibkr.cmd                安装 IBKR 所需类库
     python ibkr-ai.py                   IBKR 盈透证券
 
-## A股(同花顺)：
+## A股（同花顺）：
     pip install easytrader.cmd          安装 EasyTrader 所需类库
     python ths.py                       同花顺 + 银河证券
 
-## 币币(现货)：
+## 币币（现货）：
     pip install coin.cmd                安装币币所需类库
 
 ####  已完成:
@@ -51,4 +51,4 @@
     坚持投资，积累财富，持续盈利，扭转人生！
     小跌小买，中跌中买，大跌大买，极跌极买，
     小涨小卖，中跌中卖，大跌大卖，极跌极卖！
-    DCA 囤现货，持币待涨，迎接大牛！
+    DCA 囤现货，持货待涨，迎接大牛！
