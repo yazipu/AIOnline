@@ -3,21 +3,21 @@
 ## 原理：
     低卖高卖，始终保持【固定金额】仓位。
     
-## 美股：
+## 美股（盈透证券）：
     pip install ibkr.cmd                安装 IBKR 所需类库
     python ibkr-ai.py                   IBKR 盈透证券
 
-## A股：
+## A股(同花顺)：
     pip install easytrader.cmd          安装 EasyTrader 所需类库
     python ths.py                       同花顺 + 银河证券
 
-## 币币：
+## 币币(现货)：
     pip install coin.cmd                安装币币所需类库
 
 ####  已完成:
     python binance-ai.py               Binance 币安交易所（现货+现货带单）
-    python bitget-ai.py                BitGet 交易所（现货+现贷带单）
-    python gateio-ai.py                GateIO 狗头交易所（现货）
+    python bitget-ai.py                BitGet 币记交易所（现货+现贷带单）
+    python gateio-ai.py                GateIO 芝麻开门交易所（现货）
     python okx-ai.py                   OKX 欧易交易所（现货+现货带单）
   
 ####  未完成:
