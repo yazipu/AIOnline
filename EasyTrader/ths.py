@@ -1,4 +1,4 @@
-import os, time, redis, traceback
+import os, time, redis, traceback, random
 from chinese_calendar import is_workday
 from datetime import datetime, time as time1
 
@@ -10,8 +10,8 @@ from easytrader.utils.stock import get_today_ipo_data
 quotation = easyquotation.use('sina')
 xiadan_amount_min = 100 # 动态下单金额下界：100元：每单最少买卖100元
 xiadan_amount_max = 300 # 动态下单金额上界：300元：每单最少买卖300元
-keep_quantity = 700     # 每股最少持仓数量：700股
-keep_amount = 2500      # 每股最少持仓金额：2500元
+keep_quantity = 800     # 每股最少持仓数量：800股
+keep_amount = 2800      # 每股最少持仓金额：2800元
 keep_cash = 200         # 现金最少可用余额：200元
 
 # 同花顺xiadan.exe路径
@@ -123,6 +123,7 @@ while True:
                 if now.time() < time1(9,17,0): cash_balance = cash_balance / 2
                 xiadan_amount = min(xiadan_amount_max, int(cash_balance / len(positions) / 100) * 100)
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"持仓数量: {len(positions)}，动态下单金额: {xiadan_amount} 元")
+            random.shuffle(positions) # 乱序遍历持仓
             for position in positions:
                 try:
                     asset_value = position["市值"]
