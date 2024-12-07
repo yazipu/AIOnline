@@ -10,6 +10,9 @@ import pandas as pd
 import pandas_market_calendars as mcal
 import pytz, time, random
 
+host = '127.0.0.1'
+port = 4001
+
 # 定义标的和其交易参数（以金额为单位）
 symbols = {
     # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70 },
@@ -70,8 +73,8 @@ ib_api_version = ibapi.__version__ if hasattr(ibapi, '__version__') else "Unknow
 print("ib_insync 版本:", ib_insync_version)
 print("IB API 版本:", ib_api_version)
 
-# 连接到 IB Gateway（端口 4001）
-ib = IB(); ib.connect('127.0.0.1', 4001, clientId=1)
+# 连接到 IB Gateway
+ib = IB(); ib.connect(host , port, clientId=1)
 
 def truncate(number, decimal_places, return_type="string"):
     factor = 10 ** decimal_places
@@ -186,7 +189,7 @@ def manage_positions(positions, symbols, market_status):
 try:
     while True:
         try:
-            if not ib.isConnected(): ib.connect('127.0.0.1', 4001, clientId=1)
+            if not ib.isConnected(): ib.connect(host, port, clientId=1)
 
             # 获取账户余额信息
             account_summary = ib.accountSummary()
