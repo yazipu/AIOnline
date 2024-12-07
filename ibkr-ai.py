@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# https://ib-insync.readthedocs.io/api.html
 import yfinance as yf
 from ib_insync import IB, Stock, MarketOrder
 import ibapi

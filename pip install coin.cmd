@@ -1,9 +1,9 @@
 %~d0
 cd /d "%~dp0"
 
-pip install okx
-pip install python-okx
-pip install python-binance
-pip install python-bitget
+pip --default-timeout=600 install okx
+pip --default-timeout=600 install python-okx
+pip --default-timeout=600 install python-binance
+pip --default-timeout=600 install python-bitget
 
 pause

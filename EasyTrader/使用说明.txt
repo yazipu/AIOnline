@@ -1,32 +1,32 @@
 1、安装 Python 3.9.10 32 位
-https://www.python.org/downloads/release/python-3910/
-https://www.python.org/ftp/python/3.9.10/python-3.9.10.exe
+    https://www.python.org/downloads/release/python-3910/
+    https://www.python.org/ftp/python/3.9.10/python-3.9.10.exe
 
 2、安装 tesseract-ocr，下载：
-https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-5.3.4.20240503.exe
-https://github.com/UB-Mannheim/tesseract/releases/download/v5.4.0.20240606/tesseract-ocr-w64-setup-5.4.0.20240606.exe
+    https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-5.3.4.20240503.exe
+    https://github.com/UB-Mannheim/tesseract/releases/download/v5.4.0.20240606/tesseract-ocr-w64-setup-5.4.0.20240606.exe
 
-windows安装tesseract-ocr：https://www.jianshu.com/p/4b7d2f0ba224
+    windows安装tesseract-ocr：https://www.jianshu.com/p/4b7d2f0ba224
 
-将安装路径设置到 PATH 环境变量，保证在命令行下 tesseract 可用
+    将安装路径设置到 PATH 环境变量，保证在命令行下 tesseract 可用
 
 3、安装 easytrader
-右键以管理员身份运行：pip install easytrader.cmd
+    右键以管理员身份运行：pip install easytrader.cmd
 
 4、安装登录同花顺 xiadan.exe，设置自动登录
-同花顺（v9.10.52）：https://mams.10jqka.com.cn/new/server/html/61557.html
-easytrader 会直接识别到已登陆的窗口。
-需要对xiadan.exe客户端按以下设置，不然会导致下单时价格出错以及客户端超时锁定
-系统设置 > 界面设置: 界面不操作超时时间设为 0
-系统设置 > 交易设置: 默认买入价格/买入数量/卖出价格/卖出数量 都设置为 空
-同时客户端不能最小化也不能处于精简模式
+    同花顺（v9.10.52）：https://mams.10jqka.com.cn/new/server/html/61557.html
+    easytrader 会直接识别到已登陆的窗口。
+    需要对xiadan.exe客户端按以下设置，不然会导致下单时价格出错以及客户端超时锁定
+    系统设置 > 界面设置: 界面不操作超时时间设为 0
+    系统设置 > 交易设置: 默认买入价格/买入数量/卖出价格/卖出数量 都设置为 空
+    同时客户端不能最小化也不能处于精简模式
 
 5、运行 ths.py
-python ths.py
+    python ths.py
 
 6、如果是远程桌面，断开连接时需使用：ExitRDP.cmd
-https://mrxiao.net/disconnect-rdp-keep-windows-desktop-active.html
-https://www.joinquant.com/view/community/detail/898874c59a24051f2e2e385584f05643
+    https://mrxiao.net/disconnect-rdp-keep-windows-desktop-active.html
+    https://www.joinquant.com/view/community/detail/898874c59a24051f2e2e385584f05643
 
 7、empty.exe 是内存清理程序，内存不够时可运行： empty *
-http://www.bathome.net/thread-23875-1-1.html
+    http://www.bathome.net/thread-23875-1-1.html
