@@ -10,7 +10,10 @@ gt_keep = 10        # 保持现货 GT 余额
 
 # 设置要检测的币种和相应的价值判断
 symbols = {
-    'GT_USDT': { 'buy_value': 590, 'trade_amount': 12,'earn':20,'kv':200,'st':0 },
+    'GT_USDT': { 'buy_value': 690, 'trade_amount': 13,'earn':20,'kv':200,'st':0 },
+
+    'BTC_USDT': { 'buy_value': 1980, 'trade_amount': 22 },
+    'ETH_USDT': { 'buy_value': 980, 'trade_amount': 15 },
 
     'JASMY_USDT': { 'buy_value': 395, 'trade_amount': 11 },
     'EZSWAP_USDT': { 'buy_value': 390, 'trade_amount': 11 },
