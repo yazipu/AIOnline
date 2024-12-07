@@ -3,13 +3,19 @@
 api_key = ""
 api_secret = ""
 
+virtual_balance_enable = False # 是否启用虚拟余额
+usdt_keep = 100     # 保持现货 USDT 余额
+keep_step = 50      # 每次赎回 USDT 金额
+gt_keep = 10        # 保持现货 GT 余额
+
 # 设置要检测的币种和相应的价值判断
 symbols = {
-    'GT_USDT': { 'buy_value': 590, 'trade_amount': 12,'earn':10,'st':0 },
+    'GT_USDT': { 'buy_value': 590, 'trade_amount': 12,'earn':20,'kv':200,'st':0 },
 
     'JASMY_USDT': { 'buy_value': 395, 'trade_amount': 11 },
     'EZSWAP_USDT': { 'buy_value': 390, 'trade_amount': 11 },
-    'ORDS_USDT': { 'buy_value': 360, 'trade_amount': 11 },
+    'ORDS_USDT': { 'buy_value': 390, 'trade_amount': 11 },
+    'RON_USDT': { 'buy_value': 390, 'trade_amount': 11,'vb':0,'st':0 },
 
     'AIX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'BRISE_USDT': { 'buy_value': 290, 'trade_amount': 11 },
@@ -54,7 +60,6 @@ symbols = {
     'ALITA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MAGA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'FIGHT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'RON_USDT': { 'buy_value': 190, 'trade_amount': 11,'vb':0,'st':0 },
     'ZKF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
     'POLC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -194,6 +199,7 @@ symbols = {
     'SAFE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'JOY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'QNT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ORCA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
     # 下架/清仓
     # 'NADA_USDT': { 'buy_value': 190, 'trade_amount': 11,'st':4 },
@@ -331,7 +337,6 @@ while True:
                 break
         print(f"USDT:{usdt_balance} 活期:{usdt_flexible}")
 
-        usdt_keep = 100; keep_step = 50
         if usdt_balance < usdt_keep and usdt_flexible >= keep_step:
             result = gateio_api.post_earn_uni_lends("USDT", keep_step, "redeem")
             print(f"赎回 {keep_step} USDT : {result}")
@@ -354,9 +359,9 @@ while True:
             if saving['currency'] == "GT":
                 gt_flexible = round(float(saving['amount']), 2)
                 break
-        if gt_balance < 10 and gt_flexible >= 10:
-            result = gateio_api.post_earn_uni_lends("GT", 10, "redeem")
-            print(f"赎回 10 GT: {result}")
+        if gt_balance < gt_keep and gt_flexible >= gt_keep:
+            result = gateio_api.post_earn_uni_lends("GT", gt_keep, "redeem")
+            print(f"赎回 {gt_keep} GT: {result}")
         print(f"GT:{gt_balance} 活期:{gt_flexible}")
         
         # 获取全部行情信息
@@ -405,6 +410,7 @@ while True:
             # 虚拟余额
             if buy_price <= 0 or sell_price <= 0: print(f"{i}. {coin} 获取价格失败!!!"); err_coin += coin + " "; continue
             if int(symbol_balance * buy_price) <= 5: zero_coin += coin + " "
+            if virtual_balance_enable != True: values['vb'] = 0
             if 'vb' in values: values["virtual_balance"] = values['vb'] / buy_price
             elif not "virtual_balance" in values:
                 virtual_balance = max(0, (values["buy_value"] + values["trade_amount"] / 1.2) / buy_price - symbol_balance)

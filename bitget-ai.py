@@ -29,29 +29,32 @@ symbols = {
     'FILUSDT': { 'lead_price': 15, 'buy_value': 570, 'trade_amount': 30, 'top': 33 }, # 2 FIL
 
     # 无带单交易对
+    'CRVUSDT': { 'buy_value': 190, 'trade_amount': 11, 'top': 113 },
 
     # 带单交易对
-    'OPUSDT': { 'lead_price': 66, 'buy_value': 570, 'trade_amount': 30, 'top': 28 }, # 6 OP
-    'PYTHUSDT': { 'lead_price': 33, 'buy_value': 670, 'trade_amount': 35, 'profit_rate': 1.031, 'top': 113 }, # 35 PYTH
-    'LDOUSDT': { 'lead_price': 88, 'buy_value': 570, 'trade_amount': 30, 'top': 32 }, # 7 LDO
-    'JSTUSDT': { 'lead_price': 8.88, 'buy_value': 950, 'trade_amount': 50, 'profit_rate': 1.025, 'top': 172 }, # 700 JST
-    'GMXUSDT': { 'lead_price': 150, 'buy_value': 570, 'trade_amount': 30, 'top': 119 }, # 0.4 GMX
-    'CAKEUSDT': { 'lead_price': 50, 'buy_value': 570, 'trade_amount': 30, 'top': 79 }, # 5 CAKE
-    'STXUSDT': { 'lead_price': 88, 'buy_value': 570, 'trade_amount': 30, 'top': 39 }, # 7 STX
+    'OPUSDT': { 'lead_price': 5, 'buy_value': 570, 'trade_amount': 30, 'top': 28 }, # 6 OP
+    'PYTHUSDT': { 'lead_price': 1, 'buy_value': 670, 'trade_amount': 35, 'profit_rate': 1.031, 'top': 113 }, # 35 PYTH
+    'LDOUSDT': { 'lead_price': 4.4, 'buy_value': 570, 'trade_amount': 30, 'top': 32 }, # 7 LDO
+    'JSTUSDT': { 'lead_price': 0.7, 'buy_value': 950, 'trade_amount': 50, 'profit_rate': 1.025, 'top': 172 }, # 700 JST
+    'GMXUSDT': { 'lead_price': 130, 'buy_value': 570, 'trade_amount': 30, 'top': 119 }, # 0.4 GMX
+    'CAKEUSDT': { 'lead_price': 6, 'buy_value': 570, 'trade_amount': 30, 'top': 79 }, # 5 CAKE
+    'STXUSDT': { 'lead_price': 4.4, 'buy_value': 570, 'trade_amount': 30, 'top': 39 }, # 7 STX
 
     # 减少带单，待观察
+    'POLUSDT': { 'lead_price': 1, 'buy_value': 290, 'trade_amount': 15, 'top': 14,'st':0 }, # 15 POL
 
     # 获利了结，停止带单
-    'KEYUSDT': { 'lead_price': 0.088, 'buy_value': 190, 'trade_amount': 11, 'profit_rate': 1.051, 'top': 625,'st':1 }, # 2000 KEY
+    # 'KEYUSDT': { 'lead_price': 0.088, 'buy_value': 190, 'trade_amount': 11, 'profit_rate': 1.051, 'top': 625,'st':1 }, # 2000 KEY
 
     # 停止买入
+    'WLDUSDT': { 'lead_price': 1.1, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.041, 'top': 144 }, # 10 WLD
 
     # 暂停交易
+    'RONUSDT': { 'lead_price': 0.55, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'top': 101,'st':0 }, # 20 RON
  
     # 清仓
     # 'FLOKIUSDT': { 'lead_price': 0.0000111, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.033, 'top': 150,'st':4 }, # 400000 FLOKI
     # 'SLPUSDT': { 'lead_price': 0.00111, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.031, 'top': 63,'st':4 },
-    # 'WLDUSDT': { 'lead_price': 1, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.041, 'top': 144,'st':4 }, # 10 WLD
     # 'XLMUSDT': { 'lead_price': 0.99, 'buy_value': 570, 'trade_amount': 30, 'top': 26,'st':4 }, # 165 XLM
 
     # 获利了结，停止带单
@@ -60,8 +63,6 @@ symbols = {
     'DOGEUSDT': { 'lead_price': 0.2, 'buy_value': 480, 'trade_amount': 24, 'top': 10,'st':0 }, # 120 DOGE
     'LINKUSDT': { 'lead_price': 1, 'buy_value': 190, 'trade_amount': 11, 'top': 13,'st':0 }, # 3 LINK (LINK币带单额度不足，不要带单)
     'LTCUSDT': { 'lead_price': 70, 'buy_value': 380, 'trade_amount': 21, 'profit_rate': 1.0151, 'top': 19,'st':0 }, # 0.3 LTC
-    'POLUSDT': { 'lead_price': 1, 'buy_value': 290, 'trade_amount': 15, 'top': 14,'st':0 }, # 15 POL
-    'RONUSDT': { 'lead_price': 1.5, 'buy_value': 190, 'trade_amount': 11, 'top': 101,'st':0 }, # 20 RON
     'SHIBUSDT': { 'lead_price': 0.00000111, 'buy_value': 190, 'trade_amount': 11, 'top': 16,'st':0 }, # 466000 SHIB
     'TRXUSDT': { 'lead_price': 0.04, 'buy_value': 200, 'trade_amount': 12, 'top': 11,'st':0 }, # 300 TRX
     'UNIUSDT': { 'lead_price': 2.75, 'buy_value': 190, 'trade_amount': 11, 'profit_rate': 1.021, 'top': 22,'st':0 }, # 4 UNI
@@ -676,22 +677,25 @@ while True:
             if "profit_rate" in values and values["profit_rate"] >= profit_rate: profit_rate = values["profit_rate"] # and values["profit_rate"] > profit_rate
             success, min_buy_price, max_buy_price = close_most_profitable_order(order_list, symbol, buy_price, profit_rate)
             # 0-正常持币，1-止盈清仓：等待全部订单获利，2-止盈清仓：1+add带单，3-add带单，4-立刻清仓
-            if not "st" in values: values["st"] = 0
+            if not "st" in values: values["st"] = 1 # if sell_price < lead_price else 0
             if values["st"] == 4: # 立刻清仓
-                if saving_balance > 0:
+                if saving_balance > 0: # 赎回理财
                     result = savings_redeem(api_key, api_secret, api_passphrase, "flexible", product_id, saving_balance)
                     if result and result['code'] == '00000': print(f"赎回 {saving_balance} {coin} 成功: {result['msg']}")
                     else: print(f"赎回 {saving_balance} {coin} 失败: {result}")
-                elif order_balance > 0:
+                elif order_balance > 0: # 卖出带单
                     for order in order_list:
                         if order['symbol'] == symbol:
                             success, result = close_tracking_order_v2(api_key, api_secret, api_passphrase, symbol, [order['trackingNo']])
                             if success: print(f"成功卖出: {symbol} {json.dumps(result, separators=(',', ':'))}"); time.sleep(0.5)
-                elif buy_value - virtual_buy_value >= 1:
+                elif buy_value - virtual_buy_value >= 1: # 卖出现货
                     quantity = truncate(symbol_balance - virtual_balance, values['quantityScale'], 'float')
                     response = spot_place_order(api_key, api_secret, api_passphrase, symbol, 'sell', 'market', 'gtc', quantity)
                     if response != None and response['code'] == '00000':
                         print(f"卖出 {coin}，数量为 {quantity}，成交价为 {buy_price} USDT")
+                    else: print(f"卖出 {coin} {response}")
+                if spot_trace_enable(spot_trace_list, symbol) != 'delete': # 关闭带单
+                    response = spot_trader_symbols(api_key, api_secret, api_passphrase, [symbol], "delete")
                 continue
             if values["st"] in (1,2): lead_price = min(lead_price, max_buy_price) if max_buy_price > 0 else 0
             if 0 < lead_price < sell_price < lead_price * 2: over_coin += coin + " "

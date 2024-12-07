@@ -6,6 +6,10 @@ from okx.api import API as OKXApi
 from paux.param import to_local
 import urllib.parse as up
 
+virtual_balance_enable = False # 是否启用虚拟余额
+usdt_keep = 500     # 保持现货 USDT 余额
+keep_step = 500     # 每次赎回 USDT 金额
+
 # 设置API密钥和密钥、操作配置
 flag = "1"          # 实盘:0 , 模拟盘:1
 ###
@@ -427,7 +431,6 @@ while True:
                     if saving['ccy'] == symbol[:-5]: exist = True; break
                 if not exist: print(saving['ccy'], "余额", round(float(saving['amt']), 2), "未配置！")
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"USDT:{usdt_balance} 活期:{usdt_flexible}")
-        usdt_keep = 500; keep_step = 500
         if usdt_balance < usdt_keep and usdt_flexible >= keep_step:
             # 赎回指定数量币
             result = savings_purchase_redemption("USDT", keep_step)
@@ -511,6 +514,7 @@ while True:
             # 虚拟余额
             if buy_price <= 0 or sell_price <= 0: print(f"{i}. {coin} 获取价格失败!!!"); err_coin += coin + " "; continue
             if int(symbol_balance * buy_price) <= 11: zero_coin += coin + " "
+            if virtual_balance_enable != True: values['vb'] = 0
             if 'vb' in values: values["virtual_balance"] = values['vb'] / buy_price
             elif not "virtual_balance" in values:
                 virtual_balance = max(0, (values["buy_value"] + values["trade_amount"] / 1.2) / buy_price - symbol_balance)
