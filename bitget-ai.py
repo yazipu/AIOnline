@@ -20,7 +20,7 @@ bgb_keep = 10       # 保持现货 BGB  余额
 # 设置要检测的币种和相应的价值判断
 symbols = {
     # 平台币
-    'BGBUSDT': { 'buy_value': 190, 'trade_amount': 11, 'top': 84,'earn':50,'kv':30,'st':0 },
+    'BGBUSDT': { 'buy_value': 190, 'trade_amount': 11, 'top': 84,'earn':50,'kv':30,'spot_only':1,'st':0 },
 
     # 高单价暂时不带：获利了结，落袋为安
     'GMTUSDT': { 'lead_price': 0.5, 'buy_value': 570, 'trade_amount': 30, 'profit_rate': 1.031, 'top': 118,'st':0 }, # 60 GMT
@@ -604,8 +604,9 @@ while True:
                     order_count += 1
                     order_balance += float(order['buyFillSize'])
             symbol_balance = asset_balance + saving_balance
+            if "lead_only" in values: symbol_balance = order_balance
+            elif "spot_only" in values: symbol_balance = asset_balance - order_balance
             # print("asset_balance", asset_balance, "saving_balance", saving_balance)
-
 
             # 获取当前币种价格
             buy_price = 0; sell_price = 0
