@@ -294,10 +294,6 @@ while True:
     try:
         i = 0
         quantity = 0
-
-        # 查询GT活期余币宝信息
-        spot_trader_enable = False
-        spot_trace_symbol_list = []
         
         # 查询活期余币宝资产信息
         retry = 0
