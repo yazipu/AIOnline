@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# https://www.bitget.com/zh-CN/api-doc/spot/intro
 import time, pybitget
 from pybitget import Client
 import requests, json, hashlib, hmac, time, base64
