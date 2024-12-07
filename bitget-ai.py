@@ -9,10 +9,13 @@ api_key = ''
 api_secret = ''
 api_passphrase = ''
 
+auto_redeem_usdt = False # False：手工控管资金，手工从理财赎回 USDT，True：自动从理财赎回 USDT
+usdt_keep_step = 250 # 当BTC或ETH需要补仓时，从理财中赎回USDT的金额
+
 virtual_balance_enable = False # 是否启用虚拟余额
 usdt_keep = 1000    # 保持现货 USDT 余额
 keep_step = 100     # 每次赎回 USDT 金额
-bgb_keep = 10       # 保持现货 BGB  余额 
+bgb_keep = 10       # 保持现货 BGB  余额
 
 # 设置要检测的币种和相应的价值判断
 symbols = {
