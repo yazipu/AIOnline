@@ -14,13 +14,17 @@ keep_quantity = 800     # 每股最少持仓数量：800股
 keep_amount = 2800      # 每股最少持仓金额：2800元
 keep_cash = 200         # 现金最少可用余额：200元
 
-# 同花顺xiadan.exe路径
+# 同花顺 xiadan.exe 路径
 xiadan_path = 'C:\\THS\\xiadan.exe'
 os.system("taskkill /IM xiadan.exe > NUL 2> NUL")
 
+# redis 连接参数配置
+redis_host = 'localhost'
+redis_port = 6379
+redis_pass = ""
+
+# 持仓参数配置
 symbols = {
-    '000413': { 'name': '东旭广电', 'disabled': 1 },
-    '512780': { 'name': '天弘网购ETF', 'disabled': 1 },
     # '159509': { 'name': '纳指科技ETF', 'disabled': 1 },
     # '159687': { 'name': '亚太精选ETF', 'disabled': 1 },
     '002456': { 'name': '欧菲光', 'sell_rate': 1.033, 'buy_rate': 0.966 },
@@ -54,7 +58,7 @@ def print_time(*messages):
 
 # 连接Redis...
 print_time("连接Redis...")
-pool = redis.ConnectionPool(host='localhost',port=6379,password='',db=0,decode_responses=True)
+pool = redis.ConnectionPool(host=redis_host,port=redis_port,password=redis_pass,db=0,decode_responses=True)
 r = redis.Redis(connection_pool=pool)
 
 user = None; cnt = 0
