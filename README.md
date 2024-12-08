@@ -53,3 +53,19 @@
     小跌小买，中跌中买，大跌大买，极跌极买，
     小涨小卖，中涨中卖，大涨大卖，极涨极卖！
     DCA 囤现货，用爱神交易策略，一起穿越牛熊！
+
+## 注册：
+    币安： KN2SBYRG
+    https://accounts.binance.info/register?ref=KN2SBYRG
+
+    芝麻开门： VQUVBg9b
+    https://www.gateio24.com/signup/VQUVBg9b?ref_type=103
+
+    欧易：
+    https://www.okx.com/zh-hans/join/2097127
+
+    币记： E7518CTG
+    https://www.bgportable.com/zh-CN/referral/register?clacCode=E7518CTG&utmSource=PremierInviter
+    派网： 8KFUxypZ
+    https://reg.copybot.info/zh-CN/signUp?r=8KFUxypZ
+    
