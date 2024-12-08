@@ -61,7 +61,7 @@
     芝麻开门： VQUVBg9b
     https://www.gateio24.com/signup/VQUVBg9b?ref_type=103
 
-    欧易：
+    欧易： 2097127
     https://www.okx.com/zh-hans/join/2097127
 
     币记： E7518CTG
