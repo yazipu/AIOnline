@@ -68,5 +68,6 @@
     https://www.bgportable.com/zh-CN/referral/register?clacCode=E7518CTG&utmSource=PremierInviter
     
     派网： 8KFUxypZ
+    https://www.pionex.com/zh-CN/signUp?r=8KFUxypZ
     https://reg.copybot.info/zh-CN/signUp?r=8KFUxypZ
     
