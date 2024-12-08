@@ -15,10 +15,10 @@
     pip install coin.cmd                安装币币所需类库
 
 ####  已完成:
-    python binance-ai.py               Binance 币安交易所（现货+现货带单）
-    python bitget-ai.py                BitGet 币记交易所（现货+现贷带单）
-    python gateio-ai.py                GateIO 芝麻开门交易所（现货）
-    python okx-ai.py                   OKX 欧易交易所（现货+现货带单）
+    python binance-ai.py               Binance 币安（现货+带单）
+    python bitget-ai.py                BitGet 币记（现货+带单）
+    python gateio-ai.py                Gateio 芝麻开门（现货）
+    python okx-ai.py                   OKX 欧易（现货+带单）
   
 ####  未完成:
     python bybit-ai.py                 Bybit 拜特交易所（现货）
@@ -66,6 +66,7 @@
 
     币记： E7518CTG
     https://www.bgportable.com/zh-CN/referral/register?clacCode=E7518CTG&utmSource=PremierInviter
+    
     派网： 8KFUxypZ
     https://reg.copybot.info/zh-CN/signUp?r=8KFUxypZ
     
