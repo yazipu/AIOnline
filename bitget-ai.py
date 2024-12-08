@@ -668,7 +668,7 @@ while True:
             sum_buy_value += buy_value; sum_spot_value += buy_value - virtual_buy_value
 
             # 先尝试关闭最有利可图的带单
-            profit_rate = 1.025
+            profit_rate = 1.055
             symbol_order = values["top"] if "top" in values else 9999
             if symbol_order <= 5: profit_rate = 1.012
             elif symbol_order <= 20: profit_rate = 1.023
@@ -678,7 +678,8 @@ while True:
             elif symbol_order <= 1000: profit_rate = 1.061
             elif symbol_order <= 3000: profit_rate = 1.081
             elif symbol_order <= 5000: profit_rate = 1.111
-            elif lead_price > 0: print(f"{symbol} top", symbol_order)
+            elif lead_price > 0: print(f"{symbol} top", symbol_order); err_coin += coin + " "
+            elif order_balance > 0: err_coin += coin + " "
             if "profit_rate" in values and values["profit_rate"] >= profit_rate: profit_rate = values["profit_rate"] # and values["profit_rate"] > profit_rate
             success, min_buy_price, max_buy_price = close_most_profitable_order(order_list, symbol, buy_price, profit_rate)
             # 0-正常持币，1-止盈清仓：等待全部订单获利，2-止盈清仓：1+add带单，3-add带单，4-立刻清仓
