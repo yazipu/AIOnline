@@ -8,28 +8,11 @@ from easytrader.utils.stock import get_today_ipo_data
 
 # 行情来源：新浪 ['sina'] 腾讯 ['tencent', 'qq']
 quotation = easyquotation.use('sina')
-xiadan_amount_min = 100 # 动态下单金额下界：100元：每单最少买卖100元
-xiadan_amount_max = 300 # 动态下单金额上界：300元：每单最少买卖300元
-keep_quantity = 800     # 每股最少持仓数量：800股
-keep_amount = 2800      # 每股最少持仓金额：2800元
-keep_cash = 200         # 现金最少可用余额：200元
-
-# 同花顺 xiadan.exe 路径
-xiadan_path = 'C:\\THS\\xiadan.exe'
-os.system("taskkill /IM xiadan.exe > NUL 2> NUL")
-
-# redis 连接参数配置
-redis_host = 'localhost'
-redis_port = 6379
-redis_pass = ""
-
-# 持仓参数配置
-symbols = {
-    # '159509': { 'name': '纳指科技ETF', 'disabled': 1 },
-    # '159687': { 'name': '亚太精选ETF', 'disabled': 1 },
-    '002456': { 'name': '欧菲光', 'sell_rate': 1.033, 'buy_rate': 0.966 },
-}
-# print(symbols['002456']['sell_rate'])
+xiadan_amount_min = 200 # 动态下单金额下限：200元：每单最少买卖200元
+xiadan_amount_max = 500 # 动态下单金额上限：500元：每单最少买卖500元
+keep_quantity = 800 # 每股最少持仓数量：800股
+keep_amount = 3000 # 每股最少持仓金额：3000元
+keep_cash = 200 # 最少可用余额：200元
 
 # 截断小数，不四舍五入
 def truncate(number, decimal_places, return_type="string"):
@@ -58,9 +41,26 @@ def print_time(*messages):
 
 # 连接Redis...
 print_time("连接Redis...")
-pool = redis.ConnectionPool(host=redis_host,port=redis_port,password=redis_pass,db=0,decode_responses=True)
+pool = redis.ConnectionPool(host='localhost',port=6379,password='tKwEuEpNUejZzaDauDB',db=0,decode_responses=True)
 r = redis.Redis(connection_pool=pool)
 
+symbols = {
+    '000413': { 'name': '东旭广电', 'disabled': 1 },
+    '512780': { 'name': '天弘网购ETF', 'disabled': 1 },
+    '002607': { 'name': '中公教育', 'disabled': 1 },
+    '159823': { 'name': 'H股50ETF', 'disabled': 1 },
+    # '159509': { 'name': '纳指科技ETF', 'disabled': 1 },
+    # '159687': { 'name': '亚太精选ETF', 'disabled': 1 },
+    # '159329': { 'name': '沙特ETF', 'disabled': 1 },
+    # '520830': { 'name': '沙特ETF', 'disabled': 1 },
+    # '118048': { 'name': '利扬转债', 'disabled': 1 },
+    '002456': { 'name': '欧菲光', 'sell_rate': 1.033, 'buy_rate': 0.966 },
+}
+# print(symbols['002456']['sell_rate'])
+
+# 同花顺xiadan.exe路径
+xiadan_path = 'C:\\THS\\xiadan.exe'
+os.system("taskkill /IM xiadan.exe > NUL 2> NUL")
 user = None; cnt = 0
 while True:
     try:
@@ -97,18 +97,20 @@ while True:
 
         # 9. 查询今日可申购新股
         now = datetime.now()
-        # ipo_data = get_today_ipo_data(); now = datetime.now()
-        # # print_time("ipo_data", ipo_data)
-        # if ipo_data and len(ipo_data) > 0 and time1(9,30,0) <= now.time() <= time1(9,40,0):
-        #    # 5. 一键打新
-        #    print_time("一键打新", ipo_data)
-        #    user.auto_ipo()
+        # ipo_data = get_today_ipo_data()
+        # print_time("ipo_data", ipo_data)
+        # if ipo_data and len(ipo_data) > 0 and 
+        # if time1(9,30,0) <= now.time() <= time1(10,40,0):
+            # 5. 一键打新
+            # print_time("一键打新", ipo_data)
+            # user.auto_ipo()
         
         # 10. 刷新数据
         # user.refresh()
         
         # 1. 获取资金状况
-        # {'资金余额': 13615.92, '可用金额': 13615.92, '可取金额': 0.0, '股票市值': 864671.7, '总资产': 878287.62}
+        # {'资金余额': 13615.92, '可用金额': 13615.92, '可取金额': 0.0, 
+        # '股票市值': 864671.7, '总资产': 878287.62}
         user_balance = user.balance
         cash_balance = user_balance['可用金额']
         stock_balance = user_balance['股票市值']
@@ -127,7 +129,7 @@ while True:
                 if now.time() < time1(9,17,0): cash_balance = cash_balance / 2
                 xiadan_amount = min(xiadan_amount_max, int(cash_balance / len(positions) / 100) * 100)
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"持仓数量: {len(positions)}，动态下单金额: {xiadan_amount} 元")
-            random.shuffle(positions) # 乱序遍历持仓
+            random.shuffle(positions)
             for position in positions:
                 try:
                     asset_value = position["市值"]
@@ -151,17 +153,18 @@ while True:
                         last_price = asset_market_price
                         r.hset("THS:price", asset_code, asset_market_price)
                         print(asset_order, asset_code, asset_name, asset_balance, asset_market_price, asset_value)
-                    sell_rate = 1.0051; buy_rate = 0.9949
+                    sell_rate = 1.0101
                     if "ETF" in asset_name:
-                        if asset_market_price > 5: sell_rate = 1.0151; buy_rate = 0.9849
-                        elif asset_market_price > 4: sell_rate = 1.0131; buy_rate = 0.9869
-                        elif asset_market_price > 3: sell_rate = 1.0101; buy_rate = 0.9899
-                        elif asset_market_price > 2: sell_rate = 1.0071; buy_rate = 0.9929
-                    elif asset_market_price > 5: sell_rate = 1.0331; buy_rate = 0.9669
-                    elif asset_market_price > 3: sell_rate = 1.0249; buy_rate = 0.9751
-                    elif asset_market_price > 2: sell_rate = 1.0151; buy_rate = 0.9849
-                    elif asset_market_price > 1: sell_rate = 1.0111; buy_rate = 0.9889
+                        if asset_market_price > 5: sell_rate = 1.0211
+                        elif asset_market_price > 4: sell_rate = 1.0181
+                        elif asset_market_price > 3: sell_rate = 1.0151
+                        elif asset_market_price > 2: sell_rate = 1.0121
+                    elif asset_market_price > 5: sell_rate = 1.0331
+                    elif asset_market_price > 3: sell_rate = 1.0249
+                    elif asset_market_price > 2: sell_rate = 1.0151
+                    elif asset_market_price > 1: sell_rate = 1.0111
                     elif asset_market_price <= 0: continue
+                    buy_rate = 2 - sell_rate
                     if asset_code in symbols:
                         if "buy_rate" in symbols[asset_code]: buy_rate = float(symbols[asset_code]["buy_rate"])
                         if "sell_rate" in symbols[asset_code]: sell_rate = float(symbols[asset_code]["sell_rate"])
@@ -184,6 +187,11 @@ while True:
                         if asset_balance - amount >= keep_quantity and asset_available >= amount and asset_value > keep_amount:
                             if now.time() >= time1(9,30,0): cash_balance += bid_price * amount; onhand_balance -= bid_price * amount
                             user.sell(asset_code, price=bid_price, amount=amount) # 限价卖出
+                            # if now.time() < time1(9,25,0): # 9:25前集合竞价卖出
+                            #     user.sell(asset_code, price=truncate(bid_price,2), amount=amount) # 两位小数
+                            # elif truncate(bid_price,2,'float') == bid_price or asset_code.startswith("8") or asset_code.startswith("68"):
+                            #     user.sell(asset_code, price=bid_price, amount=amount) # 限价卖出：两位小数 or 8-北交所 or 68-科创板
+                            # else: user.market_sell(asset_code, amount=amount) # 市价卖出：三位小数
                             r.hset("THS:price", asset_code, sell_price); sell_count += 1 # time.sleep(0.2); # user.refresh();
                         else:
                             print("持仓不足", asset_code, asset_name, asset_balance, asset_available, asset_value)
@@ -194,8 +202,18 @@ while True:
                         if cash_balance - keep_cash > ask_price * amount: # 可用金额 - 保持余额 > 买入金额
                             cash_balance -= ask_price * amount; onhand_balance += ask_price * amount
                             user.buy(asset_code, price=ask_price, amount=amount) # 限价买入
+                            # if now.time() < time1(9,25,0): # 9:25前集合竞价买入
+                            #     if truncate(ask_price,2,'float') < ask_price: ask_price = truncate(ask_price+0.01, 2)
+                            #     user.buy(asset_code, price=ask_price, amount=amount) # 两位小数
+                            # elif truncate(ask_price,2,'float') == ask_price or asset_code.startswith("8") or asset_code.startswith("68"):
+                            #     user.buy(asset_code, price=ask_price, amount=amount) # 限价买入：两位小数 or 8-北交所 or 68-科创板
+                            # else: user.market_buy(asset_code, amount=amount) # 市价买入：三位小数
                             r.hset("THS:price", asset_code, buy_price); buy_count += 1 # time.sleep(0.2); # user.refresh();
                         else: print("余额不足，请入金，当前余额：", round(cash_balance,2))
+
+                    # if code == '159997': print(position)
+                    # if code in symbols:
+                    #     print(code, position["证券名称"], position["实际数量"], position["市价"], position["市值"])
                 except Exception as e1:
                     # traceback.print_exc()
                     print_time(e1)
@@ -215,6 +233,6 @@ while True:
         user.exit(); user = None; cnt = 0
         print_time("退出同花顺...")
 
-    # 休息时间
+    # 休息 10 分钟
     if buy_count + sell_count >= 10: sleep_time = 60
     time.sleep(sleep_time)
