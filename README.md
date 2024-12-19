@@ -15,10 +15,10 @@
     pip install coin.cmd                安装币币所需类库
 
 ####  已完成:
-    python binance-ai.py               Binance 币安交易所（现货+现货带单）
-    python bitget-ai.py                BitGet 币记交易所（现货+现贷带单）
-    python gateio-ai.py                GateIO 芝麻开门交易所（现货）
-    python okx-ai.py                   OKX 欧易交易所（现货+现货带单）
+    python binance-ai.py               Binance 币安（现货+带单）
+    python bitget-ai.py                BitGet 币记（现货+带单）
+    python gateio-ai.py                Gateio 芝麻开门（现货）
+    python okx-ai.py                   OKX 欧易（现货+带单）
   
 ####  未完成:
     python bybit-ai.py                 Bybit 拜特交易所（现货）
@@ -42,6 +42,7 @@
     涨得多了减减仓，跌的多了加加仓
     
 ## 观点：
+    AIOnline 爱神交易策略
     用有限的资金，赚无限的梦想
     
     用【DCA 定投】策略【建仓】
@@ -49,7 +50,27 @@
     用【网格交易】策略【降本】
     用【爱神交易】策略【守仓】
     
-    坚持投资，积累财富，持续盈利，扭转人生！
+    AI神交易策略，永远都在车上！
+    
     小跌小买，中跌中买，大跌大买，极跌极买，
     小涨小卖，中涨中卖，大涨大卖，极涨极卖！
-    DCA 囤现货，用爱神交易策略，一起穿越牛熊！
+    坚持投资，累积财富，穿越牛熊，持续盈利，
+    扭转人生，传承子孙后代！
+
+## 注册：
+    币安： KN2SBYRG
+    https://accounts.binance.info/register?ref=KN2SBYRG
+
+    芝麻开门： VQUVBg9b
+    https://www.gateio24.com/signup/VQUVBg9b?ref_type=103
+
+    欧易： 2097127
+    https://www.okx.com/zh-hans/join/2097127
+
+    币记： E7518CTG
+    https://www.bgportable.com/zh-CN/referral/register?clacCode=E7518CTG&utmSource=PremierInviter
+    
+    派网： 0gYYqCMosfN
+    https://www.pionex.com/zh-CN/signUp?r=0gYYqCMosfN
+    https://reg.copybot.info/zh-CN/signUp?r=0gYYqCMosfN
+    
