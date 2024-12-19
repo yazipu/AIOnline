@@ -4,7 +4,7 @@ api_key = ""
 api_secret = ""
 
 virtual_balance_enable = False # 是否启用虚拟余额
-usdt_keep = 100     # 保持现货 USDT 余额
+usdt_keep = 500     # 保持现货 USDT 余额
 keep_step = 50      # 每次赎回 USDT 金额
 gt_keep = 10        # 保持现货 GT 余额
 
@@ -14,13 +14,21 @@ symbols = {
 
     'BTC_USDT': { 'buy_value': 1980, 'trade_amount': 22 },
     'ETH_USDT': { 'buy_value': 980, 'trade_amount': 15 },
+    'SOL_USDT': { 'buy_value': 490, 'trade_amount': 12 },
+    'BNB_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'TON_USDT': { 'buy_value': 290, 'trade_amount': 11 },
 
     'JASMY_USDT': { 'buy_value': 395, 'trade_amount': 11 },
     'EZSWAP_USDT': { 'buy_value': 390, 'trade_amount': 11 },
     'ORDS_USDT': { 'buy_value': 390, 'trade_amount': 11 },
-    'RON_USDT': { 'buy_value': 390, 'trade_amount': 11,'vb':0,'st':0 },
 
+    'RON_USDT': { 'buy_value': 390, 'trade_amount': 11,'vb':0,'st':0 },
+    'AXS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SLP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+
+    '3ULL_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'AIX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'AMU_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'BRISE_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'CYCON_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'DOME_USDT': { 'buy_value': 290, 'trade_amount': 11 },
@@ -30,28 +38,47 @@ symbols = {
     'GEC_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'GMRX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'GOAT_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'KAT_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'LUFFY_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'OX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'PACK_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'STRM_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'SUDO_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'TENET_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'WAGMIGAMES_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'WOJAK_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'X_USDT': { 'buy_value': 290, 'trade_amount': 11 },
 
     'TRX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'BTT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'JST_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SUN_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-
-    'RING_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'YFII_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'RLY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    
+    'DOGE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'PEPE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ALGO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'KAS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ENS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'WLD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'XRP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ADA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'XLM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'FET_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ONDO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SUI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    
+    'AVA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'GRV_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'HBAR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MNT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'OMG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'POKT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'RING_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'RLY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WAVES_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WNXM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'XEM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'GRV_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'YFII_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
     'DREP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'THALES_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -70,7 +97,6 @@ symbols = {
     'STARL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'HAM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ABBC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'STRM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CHATAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'QUACK_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SOLS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -84,18 +110,17 @@ symbols = {
     'POGAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ZERO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'IQ50_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'NADA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SNAP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'HAMSTER_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'EVADORE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'GMMT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'KAT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'OVR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'POKT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CAF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'OPTIMUS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MOVEZ_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'PUMP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SYNC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'X_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CROS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'DINO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
@@ -104,8 +129,6 @@ symbols = {
     'PBUX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WATERSOL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CSIX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    '3ULL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'AVA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'DZOO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'LIME_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'LOVELY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -121,7 +144,6 @@ symbols = {
     
     'GRASS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'FUSE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'AMU_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'PUMLX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'PPAD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'LM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -144,25 +166,10 @@ symbols = {
     'DEFI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
     'ACT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'DOGE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'PEPE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'HBAR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ALGO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'KAS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ENS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'PUFFER_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'VIRTUAL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CORE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'WLD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'TON_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'XRP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ADA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'XLM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'FET_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'SOL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'APP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ONDO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'SUI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     
     'AIMX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'KOK_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -189,7 +196,6 @@ symbols = {
     'UNI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'TIA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'APT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'BNB_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'JUP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WIF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MOG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -203,9 +209,15 @@ symbols = {
     'JOY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'QNT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ORCA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-
-    # 下架/清仓
-    # 'NADA_USDT': { 'buy_value': 190, 'trade_amount': 11,'st':4 },
+    'LQTY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SANTOS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'GOATS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'DFI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ZRC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'WELL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'IO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'MOCA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ZENT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
 }
 
@@ -350,14 +362,10 @@ while True:
         gt_flexible = 0
         # GT 现货余额
         for balance in balances:
-            if balance['currency'] == "GT":
-                gt_balance = round(float(balance['available']), 2)
-                break
+            if balance['currency'] == "GT": gt_balance = round(float(balance['available']), 2); break
         # GT 活期理财余额
         for saving in savings_list:
-            if saving['currency'] == "GT":
-                gt_flexible = round(float(saving['amount']), 2)
-                break
+            if saving['currency'] == "GT": gt_flexible = round(float(saving['amount']), 2); break
         if gt_balance < gt_keep and gt_flexible >= gt_keep:
             result = gateio_api.post_earn_uni_lends("GT", gt_keep, "redeem")
             print(f"赎回 {gt_keep} GT: {result}")
@@ -489,7 +497,7 @@ while True:
 
                 # 如果有活期余币宝余额，则先赎回活期余币宝到现货
                 redeem_quantity = 0
-                if saving_balance > 0: # asset_balance < quantity and
+                if saving_balance > 0 and not "spot_only" in values: # asset_balance < quantity and
                     saving_scale = len(str(saving_balance).split(".")[1]) if "." in str(saving_balance) else 0
                     redeem_quantity = min(round(quantity, saving_scale), saving_balance)
                     if redeem_quantity == 0: redeem_quantity = saving_balance
