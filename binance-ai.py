@@ -254,7 +254,7 @@ while True:
             if ticker_time < int(time.time() * 1000):
                 ticker_list = client.get_orderbook_tickers()
                 # print(time.strftime("%Y-%m-%d %H:%M:%S"), f"行情数量: {len(ticker_list)}  时间戳: {ticker_time}")
-                if len(ticker_list) < 100: continue#
+                if len(ticker_list) < 100: continue
                 ticker_time = int(time.time() * 1000) + 1500
             ticker_info = next((data for data in ticker_list if data["symbol"] == symbol), {"bidPrice":0,"askPrice":0})
             buy_price = float(ticker_info['bidPrice'])
@@ -321,7 +321,7 @@ while True:
                         if currency == "FDUSD": fdusd_flexible -= values['trade_amount'] * 10; fdusd_balance += values['trade_amount'] * 10
                         else: usdt_flexible -= values['trade_amount'] * 10; usdt_balance += values['trade_amount'] * 10
                 if order != None and 'orderId' in order:
-                    if virtual_balance > 0: values["virtual_balance"] = max(0, virtual_balance - values['trade_amount'] / buy_price / 10)
+                    if virtual_balance > 0: virtual_balance -= values['trade_amount'] / buy_price / 10
                     if currency == "FDUSD": fdusd_balance -= values['trade_amount']
                     else: usdt_balance -= values['trade_amount']
                 # print(f"买入 {quantity} {coin}，成交价为 {round(order['fills'][0]['price'], 8)} {currency}")
@@ -339,9 +339,10 @@ while True:
                 # 现货不够卖，则全部卖出
                 if symbol_balance - virtual_balance < float(quantity):
                     quantity = truncate(symbol_balance - virtual_balance, precision)
-                    values["virtual_balance"] = max(0, virtual_balance - values['trade_amount'] / buy_price)
+                    if virtual_balance > 0: virtual_balance -= values['trade_amount'] / buy_price
                 elif virtual_balance * buy_price + values["trade_amount"] > values['sell_value']:
-                    values["virtual_balance"] = max(0, virtual_balance - values['trade_amount'] / buy_price)
+                    if virtual_balance > 0: virtual_balance -= values['trade_amount'] / buy_price
+                elif virtual_balance > 0: virtual_balance -= values["trade_amount"] / buy_price / 2
 
                 # 理财->现货：要卖出的币
                 if flexible_balance >= float(quantity) and float(asset_balance['free']) < float(quantity):
@@ -351,13 +352,17 @@ while True:
                 # 执行卖出
                 order = client.order_market_sell(symbol=symbol, quantity=quantity); sold_coin += coin + " "
                 # print(f"卖出 {quantity} {coin}，成交价为 {round(order['fills'][0]['price'], 8)} {currency}")
-            
+            if values["virtual_balance"] > virtual_balance:
+                print("virtual_balance>", values["virtual_balance"], ">", virtual_balance)
+                values["virtual_balance"] = virtual_balance if virtual_balance > 0 else 0
+            elif values["virtual_balance"] < virtual_balance:
+                print("virtual_balance<", values["virtual_balance"], "<", virtual_balance)
         except Exception as e:
             print(time.strftime("%Y-%m-%d %H:%M:%S"), symbol, "Exception:", str(e))
         
         time.sleep(0.03)
 
-    print(time.strftime("%Y-%m-%d %H:%M:%S"), f"sum_buy_value", round(sum_buy_value), "sum_spot_value", round(sum_spot_value), "usdt", round(usdt_balance + usdt_flexible))
+    print(time.strftime("%Y-%m-%d %H:%M:%S"), f"sum_buy_value", round(sum_buy_value), "sum_spot_value", round(sum_spot_value), "usdt", round(usdt_balance + usdt_flexible), "fdusd", round(fdusd_balance + fdusd_flexible))
     print(time.strftime("%Y-%m-%d %H:%M:%S"), "sold_coin", sold_coin, "err_coin", err_coin, "zero_coin", zero_coin, "copy", copy)
     
     # 休息时间
