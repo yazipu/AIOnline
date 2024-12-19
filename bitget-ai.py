@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # https://www.bitget.com/zh-CN/api-doc/spot/intro
-import time, pybitget
+import pybitget
 from pybitget import Client
 import requests, json, hashlib, hmac, time, base64
 
@@ -136,7 +136,7 @@ def close_tracking_order_v2(api_key, api_secret, api_passphrase, symbol, trackin
             'symbol': symbol,
             'trackingNoList': trackingNoList,
         }
-        data=json.dumps(close_order_params, separators=(',', ':'))
+        data = json.dumps(close_order_params, separators=(',', ':'))
         headers = get_bitget_headers(api_key, api_secret, api_passphrase, 'POST', path, "", data)
         response = requests.post(url, headers=headers, data=data, timeout=(20,60))
 
@@ -144,7 +144,7 @@ def close_tracking_order_v2(api_key, api_secret, api_passphrase, symbol, trackin
         if response.status_code == 200:
             return True, response.json()
         else:
-            print(f"卖出V2失败: {response.status_code}, {response.text}")
+            print(f"卖出V2失败: {response.status_code}, {response.text}", url, headers, data)
             return False, None
     except Exception as e:
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
@@ -178,9 +178,17 @@ def spot_place_order(api_key, api_secret, api_passphrase, symbol, side, orderTyp
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
     return None
 
-# 查找并关闭盈利最多的带单
-def close_most_profitable_order(orders, symbol, price, rate = 1.0125):
+# 获取 bid 买一价
+def get_bid_price(symbol):
     global api_key, api_secret, api_passphrase
+    response = get_spot_market_tickers(api_key, api_secret, api_passphrase, symbol)
+    if response and response['code'] == '00000': return float(response['data'][0]['bidPr'])
+    return -1
+
+# 查找并关闭盈利最多的带单
+order_time = time.time()
+def close_most_profitable_order(orders, symbol, price, rate = 1.0125):
+    global api_key, api_secret, api_passphrase, order_time
     # 初始化最大盈利和对应带单
     min_buy_price = 0
     max_buy_price = 0
@@ -198,10 +206,14 @@ def close_most_profitable_order(orders, symbol, price, rate = 1.0125):
         # 判断是否找到盈利最多的带单
         if min_buy_price_order and price > min_buy_price * rate:
             # 卖出带单
+            print(symbol, min_buy_price_order)
+            if order_time > time.time():
+                time.sleep(order_time - time.time())
+                if get_bid_price(symbol) < min_buy_price * rate: return False, min_buy_price, max_buy_price
             success, result = close_tracking_order_v2(api_key, api_secret, api_passphrase, symbol, [min_buy_price_order['trackingNo']])
             if success:
-                orders.remove(min_buy_price_order)
-                print(f"成功卖出: {symbol} {json.dumps(result, separators=(',', ':'))}"); time.sleep(0.5)
+                orders.remove(min_buy_price_order); order_time = time.time() + 11
+                print(f"成功卖出: {symbol} {json.dumps(result, separators=(',', ':'))}") # ; time.sleep(0.5)
                 return orders, min_buy_price, max_buy_price
             else:
                 # print("关闭带单失败，尝试卖出现货")
@@ -390,7 +402,7 @@ def spot_trader_symbols(api_key, api_secret, api_passphrase, symbolList, setting
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"失设置败: {response.status_code}, {response.text}")
+            print(f"设置失败: {response.status_code}, {response.text}")
             return None
     except Exception as e:
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
@@ -499,14 +511,14 @@ while True:
             if saving['productCoin'] == "USDT":
                 usdt_product_id = saving['productId']
                 usdt_flexible = round(float(saving['holdAmount']), 6)
-                # print('usdt_flexible', usdt_flexible)
+                # print(usdt_product_id, 'usdt_flexible', usdt_flexible)
                 break
         print(f"USDT:{usdt_balance} 活期:{usdt_flexible}")
-        if usdt_balance < usdt_keep and usdt_flexible >= keep_step:
+        if auto_redeem_usdt and usdt_balance < usdt_keep and usdt_flexible >= keep_step:
             result = savings_redeem(api_key, api_secret, api_passphrase, "flexible", usdt_product_id, keep_step)
             if result and result['code'] == '00000': print(f"赎回 {keep_step} USDT 成功: {result['msg']}")
             else: print(f"赎回 {keep_step} USDT 失败: {result}")
-            # time.sleep(5)
+            time.sleep(0.01) # time.sleep(5)
         elif usdt_balance > usdt_keep * 3:
             lend_usdt = int(usdt_balance - usdt_keep * 2)
             result = savings_subscribe(api_key, api_secret, api_passphrase, "flexible", usdt_product_id, lend_usdt)
@@ -561,7 +573,7 @@ while True:
 
         # 获取全部行情信息
         ticker_list = []
-        ticker_time = int(time.time() * 1000) + 1500
+        ticker_time = int(time.time() * 1000) + 2500
         response = get_spot_market_tickers(api_key, api_secret, api_passphrase)
         if response and response['code'] == '00000': ticker_list = response['data']
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"行情数量: {len(ticker_list)}  时间戳: {ticker_time}")
@@ -615,7 +627,7 @@ while True:
                 if response and response['code'] == '00000': ticker_list = response['data']
                 # print(time.strftime("%Y-%m-%d %H:%M:%S"), f"行情数量: {len(ticker_list)}  时间戳: {ticker_time}")
                 if len(ticker_list) < 100: continue
-                ticker_time = int(time.time() * 1000) + 1500
+                ticker_time = int(time.time() * 1000) + 2500
             for ticker in ticker_list:
                 if symbol == ticker["symbol"]:
                     buy_price = float(ticker['bidPr'])
@@ -624,7 +636,6 @@ while True:
             if buy_price <= 0 or sell_price <= 0: print(f"{i}. {coin} 获取价格失败!!!"); err_coin += coin + " "; continue
 
             # 带单计算：trade_amount
-            if int(symbol_balance * buy_price) <= 5: zero_coin += coin + " "
             if not "trade_amount_bak" in values: values["trade_amount_bak"] = values["trade_amount"]
             lead_price = values["lead_price"] if "lead_price" in values else 0
             if lead_price > 0 and values["buy_value"] >= 100 and not 'sell_valuex' in values: # 是否开启带单
@@ -653,9 +664,9 @@ while True:
             if virtual_balance_enable != True: values['vb'] = 0
             if 'vb' in values: values["virtual_balance"] = values['vb'] / buy_price
             elif not "virtual_balance" in values:
-                virtual_balance = max(0, (values["buy_value"] + values["trade_amount"] / 1.28) / buy_price - symbol_balance)
+                virtual_balance = max(0, (values["buy_value"] + values["trade_amount"] / 1.2) / buy_price - symbol_balance)
                 if virtual_balance * buy_price < values["trade_amount"]: virtual_balance = 0
-                keep_value = values["kv"] + values["trade_amount"] / 1.77 if "kv" in values else values["trade_amount"] * 1.99
+                keep_value = values["kv"] + values["trade_amount"] / 1.8 if "kv" in values else values["trade_amount"] * 2.56
                 if symbol_balance * buy_price < keep_value: virtual_balance -= keep_value / buy_price - symbol_balance
                 values["virtual_balance"] = max(virtual_balance, 0)
             virtual_balance = values["virtual_balance"] if values["virtual_balance"] * buy_price > values["trade_amount"] else 0
@@ -670,7 +681,7 @@ while True:
             # 先尝试关闭最有利可图的带单
             profit_rate = 1.055
             symbol_order = values["top"] if "top" in values else 9999
-            if symbol_order <= 5: profit_rate = 1.012
+            if symbol_order <= 5: profit_rate = 1.021
             elif symbol_order <= 20: profit_rate = 1.023
             elif symbol_order <= 100: profit_rate = 1.031
             elif symbol_order <= 300: profit_rate = 1.041
@@ -709,7 +720,10 @@ while True:
             if success: buy_value -= values["trade_amount"]; sleep_time = 5; sold_coin += coin + " "
             if sell_price < min_buy_price * 0.94:
                 print(f"{symbol} 购入价：{truncate(min_buy_price,10)}  当前价：{truncate(sell_price,10)}  差价：{int(100-round(sell_price/min_buy_price,2)*100)}%  建议补仓！！！")
-                if usdt_balance + usdt_flexible > 200 and sell_price < lead_price and virtual_balance > 0 and spot_trace_enable(spot_trace_list, symbol) != "":
+                ste = spot_trace_enable(spot_trace_list, symbol); trade_amount = values['trade_amount']
+                if usdt_balance > trade_amount and values['sell_value'] > sell_value + trade_amount * 1.5 and ste != "" and sell_price < lead_price:
+                    sell_value = values['buy_value'] - 1
+                elif usdt_balance + usdt_flexible > 200 and sell_price < lead_price and virtual_balance > 0 and ste != "":
                     values["virtual_balance"] = max(0, virtual_balance - values["trade_amount"] / buy_price)
                     virtual_balance = values["virtual_balance"]
                     virtual_buy_value = virtual_balance * buy_price; sell_value -= virtual_buy_value
@@ -728,7 +742,7 @@ while True:
                 #     continue
                 # 检查USDT余额
                 redeem_usdt = False; trade_amount = values["trade_amount"]
-                if symbol in ["ETHUSDT", "BTCUSDT"] and sell_price < min_buy_price * 0.985 and usdt_balance < trade_amount and usdt_flexible > 1000:
+                if symbol in ["ETHUSDT", "BTCUSDT"] and sell_price <= min_buy_price * 0.988 and usdt_balance < trade_amount and usdt_flexible > 1000:
                     redeem_usdt = True; keep_step = usdt_keep_step
                 if (auto_redeem_usdt or redeem_usdt) and usdt_balance < keep_step and usdt_flexible >= keep_step:
                     usdt_balance += keep_step; usdt_flexible -= keep_step
@@ -742,7 +756,7 @@ while True:
                     elif sell_price < lead_price * 0.5: action = 'add'
                     elif sell_price < max_buy_price * 0.6: action = 'add'
                     elif sell_price < min_buy_price * 0.93: action = 'add'
-                    elif min_buy_price > 0 and sell_price > min_buy_price * 0.985: action = "add" if values["st"] in (2,3) else "delete"
+                    elif min_buy_price > 0 and sell_price > min_buy_price * 0.988: action = "add" if values["st"] in (2,3) else "delete"
                     elif sell_price < lead_price: action = 'add'
                     # elif min_buy_price > 0: action = 'delete'
                     if action:
@@ -753,7 +767,7 @@ while True:
                         if spot_trace_enable(spot_trace_list, symbol) != action:
                             response = spot_trader_symbols(api_key, api_secret, api_passphrase, [symbol], action)
                             if response != None and response['code'] == '00000': success = True
-                if action != "add" and values["st"] != 0: continue
+                if action != "add" and values["st"] != 0 and not symbol in ['BGBUSDT']: continue
                 if action == "add" and order_time > time.time(): time.sleep(order_time - time.time())
                 elif success: time.sleep(7)
                 # 买入现货V2
@@ -775,14 +789,12 @@ while True:
                 if success != False:
                     sleep_time = 5
                     while success != False:
-                        if buy_price > min_buy_price * 1.3: time.sleep(1)
-                        elif buy_price > min_buy_price * 1.2: time.sleep(2)
-                        elif buy_price > min_buy_price * 1.1: time.sleep(5)
-                        elif buy_price > min_buy_price * 1.05: time.sleep(11)
-                        else: time.sleep(15)
-                        response = get_spot_market_tickers(api_key, api_secret, api_passphrase, symbol)
-                        if response and response['code'] == '00000': buy_price = float(response['data'][0]['bidPr'])
-                        success, min_buy_price, max_buy_price = close_most_profitable_order(success, symbol, buy_price, profit_rate)
+                        # if buy_price > min_buy_price * 1.3: time.sleep(1)
+                        # elif buy_price > min_buy_price * 1.2: time.sleep(2)
+                        # elif buy_price > min_buy_price * 1.1: time.sleep(5)
+                        # elif buy_price > min_buy_price * 1.05: time.sleep(11)
+                        # else: time.sleep(15)
+                        success, min_buy_price, max_buy_price = close_most_profitable_order(success, symbol, get_bid_price(symbol), profit_rate)
                 else:
                     # else:
                     # 计算卖出金额及数量
@@ -810,7 +822,7 @@ while True:
                     
                     # 如果有活期理财宝余额，则先赎回活期理财宝到现货
                     redeem_quantity = 0
-                    if saving_balance > 0: # asset_balance < quantity and
+                    if saving_balance > 0 and not "spot_only" in values: # asset_balance < quantity and
                         saving_scale = len(str(saving_balance).split(".")[1]) if "." in str(saving_balance) else 0
                         quantity = truncate(quantity, min(values['quantityScale'], saving_scale), 'float')
                         redeem_quantity = min(quantity, saving_balance)
@@ -818,7 +830,7 @@ while True:
                         result = savings_redeem(api_key, api_secret, api_passphrase, "flexible", product_id, redeem_quantity)
                         if result and result['code'] == '00000': print(f"赎回 {coin} 数量 {redeem_quantity} 成功: {result['msg']}")
                         else: print(f"赎回 {coin} 数量 {redeem_quantity} 金额 {trade_amount} 失败: {result}")
-                        time.sleep(5)
+                        time.sleep(6)
                     # 卖出现货V2
                     sold_coin += coin + " "
                     response = spot_place_order(api_key, api_secret, api_passphrase, symbol, 'sell', 'market', 'gtc', quantity)
@@ -847,6 +859,7 @@ while True:
                         if product['periodType'] == "flexible" and product["status"] == "in_progress":
                             result = savings_subscribe(api_key, api_secret, api_passphrase, "flexible", product['productId'], spot_quantity)
                             print(f"申购 {coin} 数量 {spot_quantity} 金额 {spot_amount} 结果: {result} {product}")
+                            if result == None: err_coin += coin + " "; del savings_product[coin]
                             break
             if values["virtual_balance"] > virtual_balance:
                 print("virtual_balance>", values["virtual_balance"], ">", virtual_balance)
