@@ -15,13 +15,33 @@ port = 4001
 
 # 定义标的和其交易参数（以金额为单位）
 symbols = {
-    # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70 },
-    'TQQQ': { 'buy_value': 980, 'trade_amount': 88, 'market': 'US' },
-    'RKLB': { 'buy_value': 780, 'trade_amount': 39, 'market': 'US' },
-    'GME': { 'buy_value': 480, 'trade_amount': 39, 'market': 'US' },
-    'KODK': { 'buy_value': 480, 'trade_amount': 39, 'market': 'US' },
-    'BEKE': { 'buy_value': 480, 'trade_amount': 39, 'market': 'US' },
-    'INTC': { 'buy_value': 480, 'trade_amount': 39, 'market': 'US' },
+
+    # 纳斯达克
+    'INTC': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 英特尔
+    # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70, 'x': 'NASDAQ' }, # 纳斯达克100
+    'MARA': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 比特币挖矿
+    'RKLB': { 'buy_value': 790, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 火箭实验室
+    'SMCI': { 'buy_value': 890, 'trade_amount': 77, 'market': 'US', 'x': 'NASDAQ' }, # 超微电脑
+    'TQQQ': { 'buy_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ
+    
+    # 纽交所
+    # 'F': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 福特汽车
+    'GME': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 游戏驿站
+    'KODK': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 柯达
+
+    # 中概股
+    'BEKE': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 贝壳
+    # 'BILI': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # B站
+    # 'IQ': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 爱奇艺
+    'MNSO': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # MINISO
+
+    # ETF 指数基金
+    # 'GLD': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 256, 'market': 'US', 'x': 'ARCA' }, # 黄金
+    # 'USO': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'ARCA' }, # 石油
+    'KORU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # Direxion韩国3倍看涨
+    'YINN': { 'buy_value': 590, 'trade_amount': 59, 'market': 'US', 'x': 'ARCA' }, # 富时中国3倍看涨
+    'WEBL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 互联网指数3倍看涨
+
 }
 
 # 设置不同市场的时区
@@ -123,7 +143,7 @@ def manage_positions(positions, symbols, market_status):
         # 使用 yfinance 获取 bid 和 ask 价格（免费）
         # bid_price, ask_price = get_bid_ask(symbol)
 
-        # 使用 IBKR API 获取 bid 和 ask 价格（非专业订阅：NASDAQ $1.50/月，NYSE $1.50/月）      
+        # 使用 IBKR API 获取 bid 和 ask 价格（非专业订阅：NASDAQ $1.50/月，NYSE $1.50/月，ARCA $1.50/月）
         stock = Stock(symbol, 'SMART', 'USD')
         ticker = ib.reqMktData(stock) # , regulatorySnapshot=False
         ib.sleep(3); bid_price = ticker.bid; ask_price = ticker.ask
