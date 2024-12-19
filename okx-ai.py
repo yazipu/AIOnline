@@ -560,7 +560,7 @@ while True:
             if not "st" in values: values["st"] = 0
 
             # 先尝试关闭最有利可图的带单
-            profit_rate = 1.032
+            profit_rate = 1.052
             symbol_order = values["top"] if "top" in values else 9999
             if symbol_order <= 5: profit_rate = 1.013
             elif symbol_order <= 20: profit_rate = 1.022
@@ -570,14 +570,18 @@ while True:
             elif symbol_order <= 1000: profit_rate = 1.062
             elif symbol_order <= 3000: profit_rate = 1.082
             elif symbol_order <= 5000: profit_rate = 1.111
-            elif lead_price > 0: print(f"{symbol} top", symbol_order)
+            elif lead_price > 0: print(f"{symbol} top", symbol_order); err_coin += coin + " "
+            elif order_balance > 0: err_coin += coin + " "
             if "profit_rate" in values and values["profit_rate"] >= profit_rate: profit_rate = values["profit_rate"]
             success, min_buy_price, max_buy_price = close_most_profitable_order(order_list, symbol, buy_price, profit_rate)
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"{i}. {coin}  价格:{truncate(sell_price,10)}  余额 buy:{int(buy_value-virtual_buy_value)}{'+'+str(int(virtual_buy_value)) if virtual_balance>0 else''} sell:{int(sell_value)}  min:{truncate(min_buy_price,10)} max:{truncate(max_buy_price,10)} st:{values['st']} cnt:{order_count}"),  # 数量小数位数：{precision}
             if success: buy_value -= values['trade_amount']; sleep_time = 10; sold_coin += coin + " "
             if buy_price < min_buy_price * 0.94:
                 print(f"{symbol}  购入价：{round(min_buy_price,8)}  当前价：{round(buy_price,8)}  差价：{int(100-round(buy_price/min_buy_price,2)*100)}%  建议补仓！！！")
-                if usdt_balance + usdt_flexible > 200 and sell_price < lead_price and virtual_balance > 0:
+                trade_amount = values['trade_amount'] 
+                if usdt_balance > trade_amount and sell_price < lead_price and values['sell_value'] > sell_value + trade_amount * 1.5:
+                    sell_value = values['buy_value'] - 1
+                elif usdt_balance + usdt_flexible > 200 and sell_price < lead_price and virtual_balance > 0:
                     values["virtual_balance"] = max(0, virtual_balance - values['trade_amount'] / buy_price)
                     virtual_balance = values["virtual_balance"]
                     virtual_buy_value = virtual_balance * buy_price; sell_value -= virtual_buy_value
@@ -593,9 +597,9 @@ while True:
                 if 0 < lead_price < sell_price < lead_price * 2: over_coin += coin + " "
                 if len(today_order_list) + spot_isolated_times >= 500: order_mode = 'cash'    # 当日买入带单次数
                 elif lead_price > 0 and sell_price > lead_price: order_mode = 'cash'  # 带单限额（当买入金额大于配置限额则不带单，以现货形式交易）
-                elif sell_price < lead_price * 0.6: order_mode = 'spot_isolated'
-                elif sell_price < max_buy_price * 0.7: order_mode = 'spot_isolated'
-                elif sell_price < min_buy_price * 0.94: order_mode = 'spot_isolated'
+                elif sell_price < lead_price * 0.5: order_mode = 'spot_isolated'
+                elif sell_price < max_buy_price * 0.6: order_mode = 'spot_isolated'
+                elif sell_price < min_buy_price * 0.93: order_mode = 'spot_isolated'
                 elif min_buy_price > 0 and sell_price > min_buy_price * 0.988: order_mode = "spot_isolated" if values["st"] in (2,3) else "cash"
                 elif sell_price < lead_price: order_mode = 'spot_isolated'
             
