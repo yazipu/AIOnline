@@ -10,7 +10,7 @@ pip --default-timeout=600 install pywin32
 pip --default-timeout=600 install pandas==2.0.3
 pip --default-timeout=600 install easytrader
 pip --default-timeout=600 install easyquotation
-pip --default-timeout=600 install chinese_calendar
+pip --default-timeout=600 install -U chinesecalendar
 pip --default-timeout=600 install pytesseract
 pip install numpy==1.26.4
 
