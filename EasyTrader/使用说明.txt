@@ -33,3 +33,7 @@
 
 8、empty.exe 是内存清理程序，内存不够时可运行： empty *
     http://www.bathome.net/thread-23875-1-1.html
+
+年末更新节假日库：
+    pip install -U chinesecalendar
+    https://pypi.org/project/chinesecalendar/
