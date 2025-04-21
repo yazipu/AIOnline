@@ -1,28 +1,32 @@
 # -*- coding: utf-8 -*-
 # https://www.gate.io/docs/developers/apiv4/zh_CN/
+import requests, json, hashlib, hmac, time, base64, random, traceback
 api_key = ""
 api_secret = ""
 
 virtual_balance_enable = False # 是否启用虚拟余额
 usdt_keep = 500     # 保持现货 USDT 余额
 keep_step = 50      # 每次赎回 USDT 金额
-gt_keep = 10        # 保持现货 GT 余额
+gt_keep = 1         # 保持现货 GT 余额
+spot_holding = 0    # 现货：0-正常持币，4-立刻清仓
+spot_position = 1   # 现货仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
 
 # 设置要检测的币种和相应的价值判断
 symbols = {
-    'GT_USDT': { 'buy_value': 690, 'trade_amount': 13,'earn':20,'kv':200,'st':0 },
+    'GT_USDT': { 'buy_value': 690, 'trade_amount': 13,'earn':100,'kv':200 },
 
-    'BTC_USDT': { 'buy_value': 1980, 'trade_amount': 22 },
-    'ETH_USDT': { 'buy_value': 980, 'trade_amount': 15 },
+    'BTC_USDT': { 'buy_value': 1980, 'trade_amount': 26 },
+    'ETH_USDT': { 'buy_value': 980, 'trade_amount': 16 },
     'SOL_USDT': { 'buy_value': 490, 'trade_amount': 12 },
     'BNB_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'TON_USDT': { 'buy_value': 290, 'trade_amount': 11 },
 
+    'EZSWAP_USDT': { 'buy_value': 395, 'trade_amount': 11 },
     'JASMY_USDT': { 'buy_value': 395, 'trade_amount': 11 },
-    'EZSWAP_USDT': { 'buy_value': 390, 'trade_amount': 11 },
     'ORDS_USDT': { 'buy_value': 390, 'trade_amount': 11 },
+    'WOJAK_USDT': { 'buy_value': 390, 'trade_amount': 11 },
 
-    'RON_USDT': { 'buy_value': 390, 'trade_amount': 11,'vb':0,'st':0 },
+    'RON_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'AXS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SLP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
@@ -39,14 +43,13 @@ symbols = {
     'GMRX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'GOAT_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'KAT_USDT': { 'buy_value': 290, 'trade_amount': 11 },
-    'LUFFY_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    # 'LUFFY_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'OX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'PACK_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'STRM_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'SUDO_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'TENET_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'WAGMIGAMES_USDT': { 'buy_value': 290, 'trade_amount': 11 },
-    'WOJAK_USDT': { 'buy_value': 290, 'trade_amount': 11 },
     'X_USDT': { 'buy_value': 290, 'trade_amount': 11 },
 
     'TRX_USDT': { 'buy_value': 290, 'trade_amount': 11 },
@@ -87,7 +90,6 @@ symbols = {
     'TIP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CULT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'KIN_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ALITA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MAGA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'FIGHT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ZKF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -96,10 +98,9 @@ symbols = {
     'UFO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'STARL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'HAM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'ABBC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'CHATAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'CHATAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'QUACK_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'SOLS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'SOLS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ADF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WLKN_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MCRT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -116,10 +117,9 @@ symbols = {
     # 'EVADORE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'GMMT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'OVR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'CAF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'CAF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'OPTIMUS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MOVEZ_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'PUMP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SYNC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CROS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'DINO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -129,9 +129,9 @@ symbols = {
     'PBUX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'WATERSOL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CSIX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'DZOO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'DZOO_USDT': { 'buy_value': 190, 'trade_amount': 11,'st':4 },
     'LIME_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'LOVELY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'LOVELY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
 
     'SMOLE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'INSP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -147,7 +147,7 @@ symbols = {
     'PUMLX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'PPAD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'LM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'BRCT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'BRCT_USDT': { 'buy_value': 190, 'trade_amount': 11,'st':4 },
     'GQ_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'BOMB_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'TURT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -187,11 +187,9 @@ symbols = {
     'ENA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'AVAX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SEI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'RATS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'FTM_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'RATS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'CFX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'FIL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'XMR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'NEAR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'UNI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'TIA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -200,12 +198,12 @@ symbols = {
     'WIF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MOG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'BOME_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'XVG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'SAND_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'TURBO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'NERD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'NEXG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
-    'SAFE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'NEXO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'SAFE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'JOY_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'QNT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ORCA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
@@ -218,10 +216,83 @@ symbols = {
     'IO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'MOCA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
     'ZENT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AGLD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AI16Z_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AVAAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'PENGU_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'COOKIE_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'GIGA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'COW_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AGENT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AIXBT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AIAGENT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'TAOCAT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'KEKIUS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'MAGIC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'BIO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'IQ_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'BTG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SUIA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'MICRO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'OPAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'UXLINK_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'HGPT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'XETA_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AQT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'PAI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'IOTX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SONIC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'CGPT_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ARC_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'DUCK_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'TRUMP_USDT': { 'buy_value': 290, 'trade_amount': 11 },
+    'ZEREBRO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'SWARMS_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'S_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'OAX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'CLV_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AMB_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+
+    'INSN_USDT': { 'buy_value': 33, 'sell_valuex': 210, 'trade_amount': 11 },
+    'PUMPAI_USDT': { 'buy_value': 90, 'sell_valuex': 210, 'trade_amount': 11 },
+
+    'PI_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'LF_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'BIGPUMP_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+
+    'AST_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'AERGO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'RENDER_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'VOXEL_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ZRX_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+
+    'OGN_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'PHB_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'HOLD_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'MYRO_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    'ENJ_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    
+    # 'XMR_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+    # 'XVG_USDT': { 'buy_value': 190, 'trade_amount': 11 },
+
+    # 'FTM_USDT': { 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11,'st':4 },
+    # 'ALITA_USDT': { 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11,'st':4 },
+    # 'MAGATRUMP_USDT': { 'buy_value': 55, 'sell_valuex': 180, 'trade_amount': 11 },
+    # 'ABBC_USDT': { 'buy_value': 190, 'trade_amount': 11,'st':4 },
 
 }
 
-import requests, json, hashlib, hmac, time, base64
+# 仓位管理
+def spot_position_init(symbols, spot_position = 1):
+    for symbol, values in symbols.items():
+        if "lead_price" in values and spot_position < 1: values["lead_price"] *= spot_position
+        values["buy_value"] = round(values["buy_value"] * spot_position)
+        values["trade_amount"] = max(round(values["trade_amount"] * spot_position), 11)
+        if "sell_value" in values: values["sell_value"] = round(max(values["sell_value"] * spot_position, values["buy_value"] + values["trade_amount"] * 1.99))
+        if "sell_valuex" in values: values["sell_valuex"] = round(max(values["sell_valuex"] * spot_position, values["buy_value"] + values["trade_amount"] * 1.99))
+    return symbols
+if spot_position != 1: symbols = spot_position_init(symbols, spot_position)
 
 class GateioAPI:
     def __init__(self, api_key, api_secret):
@@ -253,12 +324,15 @@ class GateioAPI:
             return response.content
         except Exception as e:
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
+            traceback.print_exc()
         return None
 
     def get_spot_balance(self): return self._send_request('GET', '/spot/accounts')
     def get_spot_currencies(self): return self._send_request('GET', '/spot/currencies')
     def get_spot_currency_pairs(self): return self._send_request('GET', '/spot/currency_pairs')
-    def get_spot_tickers(self): return self._send_request('GET', '/spot/tickers')
+    def get_spot_tickers(self, _currency_pair = None):
+        query_param = f"currency_pair={_currency_pair}" if _currency_pair != None else ""
+        return self._send_request('GET', '/spot/tickers', query_param)
     def get_earn_uni_lends(self, page = 1, limit = 100):
         query_param = f"page={page}&limit={limit}"
         return self._send_request('GET', '/earn/uni/lends', query_param)
@@ -266,7 +340,7 @@ class GateioAPI:
         data = { 'currency': _currency, 'amount': _amount, 'type': _type, 'min_rate': _min_rate }
         return self._send_request('POST', '/earn/uni/lends', None, data)
     def post_spot_batch_orders(self, data): return self._send_request('POST', '/spot/batch_orders', None, data)
-    def post_spot_orders(self, _currency_pair, _side, _type, _amount, _time_in_force = 'fok'):
+    def post_spot_orders(self, _currency_pair, _side, _type, _amount, _time_in_force = 'ioc'): # Only ioc and fok are supported when type=market
         data = {
             'currency_pair': _currency_pair,
             'side': _side,
@@ -379,11 +453,16 @@ while True:
         
     except Exception as e:
         print(time.strftime("%Y-%m-%d %H:%M:%S"), "Exception:", str(e))
+        traceback.print_exc()
         time.sleep(30)
         continue
 
     sleep_time = 60; sum_buy_value = 0; sum_spot_value = 0; sold_coin = err_coin = zero_coin = ""; order_time = time.time()
-    for symbol, values in symbols.items():
+    # for symbol, values in symbols.items():
+    # 获取所有键，然后以乱序的方式遍历字典
+    keys = list(symbols.keys()); random.shuffle(keys)
+    for symbol in keys:
+        values = symbols[symbol]
         try:
             i = i + 1
             coin = symbol[:-5]
@@ -409,12 +488,18 @@ while True:
                 ticker_time = int(time.time() * 1000) + 1500
             for ticker in ticker_list:
                 if symbol == ticker["currency_pair"]:
+                    if symbol in ["XVG_USDT", "XMR_USDT"]: print(symbol, ticker)
                     buy_price = float(ticker['highest_bid'])
                     sell_price = float(ticker['lowest_ask'])
-                    break
+                    if buy_price > 0 and sell_price > 0: break
             # print("price", buy_price, sell_price)
 
             # 虚拟余额
+            tickers = []
+            if buy_price <= 0 or sell_price <= 0: # 获取价格
+                tickers = gateio_api.get_spot_tickers(symbol)
+                if isinstance(tickers, list): buy_price = float(tickers[0]['highest_bid']); sell_price = float(tickers[0]['lowest_ask'])
+                else: print(symbol, tickers)
             if buy_price <= 0 or sell_price <= 0: print(f"{i}. {coin} 获取价格失败!!!"); err_coin += coin + " "; continue
             if int(symbol_balance * buy_price) <= 5: zero_coin += coin + " "
             if virtual_balance_enable != True: values['vb'] = 0
@@ -434,7 +519,17 @@ while True:
             sell_value = round(symbol_balance * sell_price, values["price_scale"])
             sum_buy_value += buy_value; sum_spot_value += buy_value - virtual_buy_value
             
-            if not "st" in values: values["st"] = 0 # 0-正常持币，4-立刻清仓
+            if not "st" in values: values["st"] = spot_holding # 0-正常持币，4-立刻清仓
+            if values["st"] == 4: # 4-立刻清仓
+                trade_amount = buy_value - virtual_buy_value
+                if saving_balance > 0:
+                    result = gateio_api.post_earn_uni_lends(coin, saving_balance, "redeem")
+                    print(f"赎回 {coin} 数量 {saving_balance}: {result}")
+                elif trade_amount > 1:
+                    quantity = symbol_balance - virtual_balance
+                    response = gateio_api.post_spot_orders(symbol, 'sell', 'market', quantity)
+                    print(f'卖出 {coin}，数量 {quantity} 金额 {trade_amount}:', response); sold_coin += coin + " "
+                continue
                 
             # 带单计算：trade_amount
             if not "trade_amount_bak" in values: values["trade_amount_bak"] = values["trade_amount"]
@@ -465,7 +560,8 @@ while True:
             # 如果价值低于买入价值，则买入指定数量的币种
             if sell_price > 0 and sell_value < values['buy_value']:
                 quantity = values['trade_amount']
-                if usdt_balance < quantity: continue
+                if usdt_balance < quantity: print(f"买入 {coin}，数量为 {quantity}，成交价为 {sell_price} USDT"); continue
+                usdt_balance -= quantity
                 # 买入现货
                 response = gateio_api.post_spot_orders(symbol, 'buy', 'market', quantity)
                 print(f"买入 {coin}，数量为 {quantity}，成交价为 {sell_price} USDT", response)
@@ -510,6 +606,7 @@ while True:
             values["virtual_balance"] = virtual_balance if virtual_balance > 0 else 0
         except Exception as e:
             print(time.strftime("%Y-%m-%d %H:%M:%S"), symbol, f"Exception:", str(e))
+            traceback.print_exc()
         
         time.sleep(0.05)
     
