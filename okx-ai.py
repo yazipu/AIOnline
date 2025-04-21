@@ -10,6 +10,10 @@ import urllib.parse as up
 virtual_balance_enable = False # 是否启用虚拟余额
 usdt_keep = 500     # 保持现货 USDT 余额
 keep_step = 500     # 每次赎回 USDT 金额
+spot_holding = 0    # 现货：0-正常持币，1-逐渐减仓，4-立刻清仓
+copy_holding = 0    # 带单：0-正常持币，1-逐渐减仓，4-立刻清仓
+spot_position = 1   # 现货仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
+copy_position = 1   # 带单仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
 
 # 设置API密钥和密钥、操作配置
 flag = "1"          # 实盘:0 , 模拟盘:1
@@ -106,9 +110,16 @@ def truncate(number, decimal_places, return_type="string"):
     return f'{truncated_number:.{decimal_places}f}'.rstrip('0').rstrip('.')
 
 # 交易对格式转换（将配置交易对转换成okx平台交易对，便于多平台兼容）
-def convertOkxPair(symbols):
+def convertOkxPair(symbols, spot_position = 1, copy_position = 1):
     _tmp = {}
-    for symbol,value in symbols.items(): _tmp[symbol[:-4] + "-" + symbol[-4:]] = value
+    for symbol,values in symbols.items():
+        trading_rate = copy_position if "lead_price" in values else spot_position
+        if "lead_price" in values and trading_rate < 1: values["lead_price"] *= trading_rate
+        values["buy_value"] = round(values["buy_value"] * trading_rate)
+        values["trade_amount"] = max(round(values["trade_amount"] * trading_rate), 11)
+        if "sell_value" in values: values["sell_value"] = round(max(values["sell_value"] * trading_rate, values["buy_value"] + values["trade_amount"] * 1.99))
+        if "sell_valuex" in values: values["sell_valuex"] = round(max(values["sell_valuex"] * trading_rate, values["buy_value"] + values["trade_amount"] * 1.99))
+        _tmp[symbol[:-4] + "-" + symbol[-4:]] = values
     return _tmp
 
 # okxAPI的替补
@@ -259,7 +270,7 @@ def savings_purchase_redemption(symbol, amt):
     return result
 
 # 初始化
-symbols = convertOkxPair(symbols)
+symbols = convertOkxPair(symbols, spot_position, copy_position)
 okxApi = OKXApi(api_key, api_secret, api_passphrase, flag=flag)
 okxApiSub = OKXApiSub(api_key, api_secret, api_passphrase, flag=flag)
 version = okx.__version__
@@ -495,6 +506,8 @@ while True:
                     order_count += 1
             # 现货余额 + 理财余额 + 带单余额
             symbol_balance = asset_balance + saving_balance + order_balance
+            if "lead_only" in values: symbol_balance = order_balance
+            elif "spot_only" in values: symbol_balance = asset_balance
 
             # 获取所有币种价格
             buy_price = 0; sell_price = 0
@@ -557,12 +570,12 @@ while True:
                 # print(values)
             
             # 0-正常持币，1-止盈清仓：开单间隔1.2%，2-max_buy_value止盈清仓，3-lead_price止盈清仓，4-立刻清仓
-            if not "st" in values: values["st"] = 0
+            if not "st" in values: values["st"] = copy_holding if sell_price < lead_price else spot_holding
 
             # 先尝试关闭最有利可图的带单
             profit_rate = 1.052
             symbol_order = values["top"] if "top" in values else 9999
-            if symbol_order <= 5: profit_rate = 1.013
+            if symbol_order <= 5: profit_rate = 1.021
             elif symbol_order <= 20: profit_rate = 1.022
             elif symbol_order <= 100: profit_rate = 1.032
             elif symbol_order <= 300: profit_rate = 1.042
