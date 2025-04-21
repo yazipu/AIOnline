@@ -13,11 +13,14 @@ import pytz, time, random
 host = '127.0.0.1'
 port = 4001
 
+spot_holding = 0    # 现货：0-正常持币，4-立刻清仓
+spot_position = 1   # 现货仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
+
 # 定义标的和其交易参数（以金额为单位）
 symbols = {
 
     # 纳斯达克
-    'INTC': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 英特尔
+    'INTC': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ','st':0 }, # 英特尔
     # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70, 'x': 'NASDAQ' }, # 纳斯达克100
     'MARA': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 比特币挖矿
     'RKLB': { 'buy_value': 790, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 火箭实验室
@@ -25,7 +28,7 @@ symbols = {
     'TQQQ': { 'buy_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ
     
     # 纽交所
-    # 'F': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 福特汽车
+    'F': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 福特汽车
     'GME': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 游戏驿站
     'KODK': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 柯达
 
@@ -38,11 +41,28 @@ symbols = {
     # ETF 指数基金
     # 'GLD': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 256, 'market': 'US', 'x': 'ARCA' }, # 黄金
     # 'USO': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'ARCA' }, # 石油
-    'KORU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # Direxion韩国3倍看涨
+    'GDXU': { 'buy_value': 490, 'trade_amount': 49, 'market': 'US', 'x': 'ARCA' }, # 金矿3倍看涨
+    'KORU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 韩国3倍看涨
+    'RETL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 零售3倍看涨
+    'SOXL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 半导体3倍看涨
+    'WEBL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 互联网3倍看涨
     'YINN': { 'buy_value': 590, 'trade_amount': 59, 'market': 'US', 'x': 'ARCA' }, # 富时中国3倍看涨
-    'WEBL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 互联网指数3倍看涨
+    # 'WTIU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 原油3倍看涨
+    'PILL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 医药3倍看涨
+    'DRN': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 房地产3倍看涨
 
 }
+
+# 仓位管理
+def spot_position_init(symbols, spot_position = 1):
+    for symbol, values in symbols.items():
+        if "lead_price" in values and spot_position < 1: values["lead_price"] *= spot_position
+        values["buy_value"] = round(values["buy_value"] * spot_position)
+        values["trade_amount"] = max(round(values["trade_amount"] * spot_position), 11)
+        if "sell_value" in values: values["sell_value"] = round(max(values["sell_value"] * spot_position, values["buy_value"] + values["trade_amount"] * 1.99))
+        if "sell_valuex" in values: values["sell_valuex"] = round(max(values["sell_valuex"] * spot_position, values["buy_value"] + values["trade_amount"] * 1.99))
+    return symbols
+if spot_position != 1: symbols = spot_position_init(symbols, spot_position)
 
 # 设置不同市场的时区
 eastern = pytz.timezone('America/New_York') # 纽约
@@ -127,7 +147,9 @@ def manage_positions(positions, symbols, market_status):
     random.shuffle(keys)
 
     # 以乱序的方式遍历字典
+    i = 0
     for symbol in keys:
+        i += 1
         params = symbols[symbol]
         buy_value = params['buy_value']
         trade_amount = params['trade_amount']
@@ -170,13 +192,15 @@ def manage_positions(positions, symbols, market_status):
 
         bid_value = round(bid_price * current_amount, 2)
         ask_value = round(ask_price * current_amount, 2)
-        print(time.strftime("%Y-%m-%d %H:%M:%S"), f"{symbol} 当前 bid_price: {bid_price} ask_price: {ask_price} bid_value: {bid_value}, ask_value: {ask_value}")
+        print(time.strftime("%Y-%m-%d %H:%M:%S"), f"{i}.{symbol} 当前 bid_price: {bid_price} ask_price: {ask_price} bid_value: {bid_value}, ask_value: {ask_value}")
 
         # 是否开盘
         is_market_open = get_market_status(market)
         if not is_market_open: continue # 未开盘
         if not ib.isConnected(): break  # 未连接
-        
+
+        if not "st" in params: params["st"] = spot_holding # 0-正常持币，4-立刻清仓
+
         # 判断是否需要买入
         if ask_value <= buy_value:
             trade_amount_ex = buy_value - ask_value + trade_amount / 2
