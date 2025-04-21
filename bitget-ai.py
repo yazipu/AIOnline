@@ -9,24 +9,28 @@ api_key = ''
 api_secret = ''
 api_passphrase = ''
 
-auto_redeem_usdt = False # False：手工控管资金，手工从理财赎回 USDT，True：自动从理财赎回 USDT
+auto_redeem_usdt = False # False：手工控管资金，手工从理财赎回 USDT，True：将自动从理财赎回 USDT
 usdt_keep_step = 250 # 当BTC或ETH需要补仓时，从理财中赎回USDT的金额
 
 virtual_balance_enable = False # 是否启用虚拟余额
 usdt_keep = 1000    # 保持现货 USDT 余额
 keep_step = 100     # 每次赎回 USDT 金额
 bgb_keep = 10       # 保持现货 BGB  余额
+spot_holding = 0    # 现货：0-正常持币，1-逐渐减仓，4-立刻清仓
+copy_holding = 0    # 带单：0-正常持币，1-逐渐减仓，4-立刻清仓
+spot_position = 1.1   # 现货仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
+copy_position = 1.1   # 带单仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
 
 # 设置要检测的币种和相应的价值判断
 symbols = {
     # 平台币
-    'BGBUSDT': { 'buy_value': 190, 'trade_amount': 11, 'top': 84,'earn':50,'kv':30,'spot_only':1,'st':0 },
+    'BGBUSDT': { 'lead_price': 0.1, 'buy_value': 190, 'trade_amount': 11, 'top': 84,'st':0,'earn':0,'kv':30,'spot_only':1 },
 
     # 高单价暂时不带：获利了结，落袋为安
     'GMTUSDT': { 'lead_price': 0.5, 'buy_value': 570, 'trade_amount': 30, 'profit_rate': 1.031, 'top': 118,'st':0 }, # 60 GMT
 
     # TOP 100
-    'BTCUSDT': { 'lead_price': 550000, 'buy_value': 10150, 'trade_amount': 110, 'profit_rate': 1.011, 'top': 1, 'minStepVal': 0.001,'vb':0,'st':0 }, # 0.0002 BTC
+    'BTCUSDT': { 'lead_price': 138000, 'buy_value': 10150, 'trade_amount': 110, 'profit_rate': 1.011, 'top': 1, 'minStepVal': 0.001,'vb':0,'st':0 }, # 0.0002 BTC
     'ETHUSDT': { 'lead_price': 11000, 'buy_value': 5150, 'trade_amount': 55, 'profit_rate': 1.011, 'top': 2,'vb':0,'st':0 }, # 0.005 ETH
 
     # 候补交易对
@@ -73,6 +77,18 @@ symbols = {
     'XRPUSDT': { 'lead_price': 0.5, 'buy_value': 280, 'trade_amount': 15, 'profit_rate': 1.013, 'top': 4,'st':0 }, # 30 XRP
     
 }
+
+# 仓位管理
+def spot_position_init(symbols, spot_position = 1, copy_position = 1):
+    for symbol, values in symbols.items():
+        trading_rate = copy_position if "lead_price" in values else spot_position
+        if "lead_price" in values and trading_rate < 1: values["lead_price"] *= trading_rate
+        values["buy_value"] = round(values["buy_value"] * trading_rate)
+        values["trade_amount"] = max(round(values["trade_amount"] * trading_rate), 11)
+        if "sell_value" in values: values["sell_value"] = round(max(values["sell_value"] * trading_rate, values["buy_value"] + values["trade_amount"] * 1.99))
+        if "sell_valuex" in values: values["sell_valuex"] = round(max(values["sell_valuex"] * trading_rate, values["buy_value"] + values["trade_amount"] * 1.99))
+    return symbols
+if spot_position != 1: symbols = spot_position_init(symbols, spot_position, copy_position)
 
 # 构造请求头 https://bitgetlimited.github.io/apidoc/zh/copyTrade/#8ba46c43fe
 def get_bitget_headers(api_key, api_secret, api_passphrase, method, path, query_string="", body=""):
@@ -694,7 +710,7 @@ while True:
             if "profit_rate" in values and values["profit_rate"] >= profit_rate: profit_rate = values["profit_rate"] # and values["profit_rate"] > profit_rate
             success, min_buy_price, max_buy_price = close_most_profitable_order(order_list, symbol, buy_price, profit_rate)
             # 0-正常持币，1-止盈清仓：等待全部订单获利，2-止盈清仓：1+add带单，3-add带单，4-立刻清仓
-            if not "st" in values: values["st"] = 1 # if sell_price < lead_price else 0
+            if not "st" in values: values["st"] = copy_holding if sell_price < lead_price else spot_holding
             if values["st"] == 4: # 立刻清仓
                 if saving_balance > 0: # 赎回理财
                     result = savings_redeem(api_key, api_secret, api_passphrase, "flexible", product_id, saving_balance)
