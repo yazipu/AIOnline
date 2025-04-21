@@ -17,6 +17,8 @@ usdt_keep = 500     # 保持现货 USDT 余额
 keep_step = 100     # 每次赎回 USDT 金额
 fdusd_keep = 150    # 保持现货 FDUSD 余额
 fdusd_step = 50     # 每次赎回 FDUSD 金额
+spot_holding = 0 # 现货：0-正常持币，4-立刻清仓
+spot_position = 1 # 现货仓位：1-100%仓位，0.9-90%仓位，1.1-110%仓位
 
 # 现货交易对
 symbols_spot = {
@@ -283,12 +285,12 @@ while True:
             print(time.strftime("%Y-%m-%d %H:%M:%S"), f"{i}. {coin}  价格:{round(sell_price,10)}  余额 buy:{int(buy_value-virtual_buy_value)}{'+'+str(int(virtual_buy_value)) if virtual_balance>0 else''} sell:{sell_value}"),  # 数量小数位数：{precision}
             
             # 0-正常持币，4-立刻清仓
-            if not "st" in values: values["st"] = 0
+            if not "st" in values: values["st"] = spot_holding
             if values["st"] == 4: # 立刻清仓
                 if flexible_balance > 0:
                     result = redeem_simple_earn_flexible_product(coin+"001", flexible_balance)
                     if not result.get("success"): print(f"赎回 {coin} {flexible_balance} 失败: {result}")
-                elif buy_value > 1:
+                elif buy_value - virtual_buy_value > 1:
                     quantity = truncate(symbol_balance - virtual_balance, precision)
                     order = client.order_market_sell(symbol=symbol, quantity=quantity); sold_coin += coin + " "
                 continue
@@ -297,7 +299,7 @@ while True:
             if not "sell_value" in values:
                 if 'sell_valuex' in values: values["sell_value"] = values["sell_valuex"]
                 elif values["trade_amount"] < 10: values["sell_value"] = values["buy_value"] + 12
-                else: values["sell_value"] = round(values["buy_value"] + values["trade_amount"] * 1.99, 0)
+                else: values["sell_value"] = round(values["buy_value"] + values["trade_amount"] * 1.96, 0)
             
             # BNB有launchpad
             if symbol == "BNBUSDT" and sell_value > 1:
