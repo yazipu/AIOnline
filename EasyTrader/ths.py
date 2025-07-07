@@ -178,7 +178,9 @@ while True:
                     if asset_code.startswith(('0','6','8')):
                         bid_price = truncate(bid_price, 2, 'float')
                         ask_price = truncate(ask_price, 2, 'float')
-                    if bid_price > sell_price: # 卖出
+                    if bid_price > sell_price * 1.5 or ask_price < buy_price / 1.5: # 价格偏差过大
+                        r.hdel("THS:price", asset_code)
+                    elif bid_price > sell_price: # 卖出
                         while amount > 100 and asset_available < amount: amount -= 100
                         while amount > 100 and asset_balance - amount < keep_quantity: amount -= 100
                         print_time(asset_order, "卖出", asset_code, asset_name, bid_price, last_price, "->", sell_price, amount, round(cash_balance,2))
