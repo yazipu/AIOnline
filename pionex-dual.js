@@ -1,0 +1,100 @@
+﻿if (!window.inited) (function() {
+  const originalOpen = XMLHttpRequest.prototype.open;
+  const originalSend = XMLHttpRequest.prototype.send;
+  const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+
+  const requestHeaders = new WeakMap();
+
+  XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+    this._url = url;
+    return originalOpen.apply(this, arguments);
+  };
+
+  XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
+    if (!requestHeaders.has(this)) {
+      requestHeaders.set(this, {});
+    }
+    const headers = requestHeaders.get(this);
+    headers[header] = value;
+    return originalSetRequestHeader.apply(this, arguments);
+  };
+
+  XMLHttpRequest.prototype.send = function(body) {
+    const url = this._url || '';
+    const headers = requestHeaders.get(this) || {};
+    const auth = headers["Authorization"];
+
+    if (url.includes("/dual/index") && auth) {
+      // console.log("🔍 Intercepted /dual/index Authorization:");
+      // console.log("🔐 Authorization:", auth);
+      // console.log("🌍 URL:", url);
+      // 可选：复制到剪贴板
+      // navigator.clipboard.writeText(auth);
+      window.Authorization = auth
+    }
+
+    return originalSend.apply(this, arguments);
+  };
+})();
+setTimeout(async () => {
+    const baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/?client_id=pionex_web_20250722.297.7d0285d&device_id=38cba39a-bc51-4b77-bf4c-4c0466de8209&fp_did=2d6ba72529b4c9aec3d6a809135b88f4&fpp_did=h16jhN0wvJ3mIhyOvFlQ&app_ver=20250722.297.7d0285d&os=web&tz_name=Asia%2FShanghai&tz_offset=28800&sys_lang=zh-CN&app_lang=zh-CN";
+
+    let page_token = "";
+    const per_page = 20;
+    let allRecords = [];
+    let page = 1;
+
+    while (true) {
+        const res = await fetch(baseUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": window.Authorization
+            },
+            body: JSON.stringify({
+                page_token,
+                per_page,
+                type: "",   // 所有产品
+                status: 1   // 1=运行中，2=已结束
+            })
+        });
+
+        const data = await res.json();
+        const records = data?.data?.records || [];
+        const nextToken = data?.data?.next_token;
+
+        if (records.length === 0) break;
+
+        allRecords.push(...records);
+        console.log(`📄 已抓取第 ${page} 页，共 ${records.length} 条`);
+        page++;
+
+        if (!nextToken) break;
+        page_token = nextToken;
+    }
+
+    // 合计金额
+    let total = allRecords.reduce((sum, r) => sum + parseFloat(r.data.origin_invest_amount || 0), 0);
+    let income = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.income || 0), 0);
+    let uincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.unsettle_income || 0), 0);
+    let cincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.cycle_income || 0), 0);
+
+    // 输出明细表
+    console.table(allRecords.map(r => ({
+        币种: r.data.base,
+        开单金额: r.data.origin_invest_amount,
+        下次预计收入: r.data.auto_static.unsettle_income,
+        预计结算收入: r.data.auto_static.income,
+        上次预计收入: r.data.latest_hour_balance.cycle_income,
+        创建时间: new Date(r.data.create_time).toLocaleString(),
+        下次结算时间: new Date(r.data.auto_static.static_time).toLocaleString(),
+    })));
+    
+    console.log(`\n✅ 共 ${allRecords.length} 条记录`);
+    console.log(`💰 合计投入金额（运行中）：${total.toFixed(2)} USDT`);
+    console.log(`💰 预计下次收入（运行中）：${uincome.toFixed(2)} USDT`);
+    console.log(`💰 上次预计收入（运行中）：${cincome.toFixed(2)} USDT`);
+    console.log(`💰 预计结算收入（运行中）：${income.toFixed(2)} USDT`);
+}, 5000);
+
+window.inited = true
