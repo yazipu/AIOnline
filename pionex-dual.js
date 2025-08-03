@@ -1,4 +1,10 @@
-﻿if (!window.inited) (function() {
+﻿// 🧪 使用方式：
+// 打开 Pionex 并登录页面：https://www.pionex.com/zh-CN/structured-finance/running
+// 在浏览器按 F12 → Console 粘贴代码回车
+// baseUrl 需修改替换
+window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/?client_id=pionex_web_20250722.297.7d0285d&device_id=38cba39a-bc51-4b77-bf4c-4c0466de8209&fp_did=2d6ba72529b4c9aec3d6a809135b88f4&fpp_did=h16jhN0wvJ3mIhyOvFlQ&app_ver=20250722.297.7d0285d&os=web&tz_name=Asia%2FShanghai&tz_offset=28800&sys_lang=zh-CN&app_lang=zh-CN"
+
+if (!window.inited) (function() {
   const originalOpen = XMLHttpRequest.prototype.open;
   const originalSend = XMLHttpRequest.prototype.send;
   const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
@@ -37,7 +43,7 @@
   };
 })();
 setTimeout(async () => {
-    const baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/?client_id=pionex_web_20250722.297.7d0285d&device_id=38cba39a-bc51-4b77-bf4c-4c0466de8209&fp_did=2d6ba72529b4c9aec3d6a809135b88f4&fpp_did=h16jhN0wvJ3mIhyOvFlQ&app_ver=20250722.297.7d0285d&os=web&tz_name=Asia%2FShanghai&tz_offset=28800&sys_lang=zh-CN&app_lang=zh-CN";
+    const baseUrl = window.baseUrl;
 
     let page_token = "";
     const per_page = 20;
