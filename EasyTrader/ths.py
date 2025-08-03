@@ -143,13 +143,13 @@ while True:
                     asset_profit = position["盈亏"]
                     asset_today_buy = position["当日买入"]
                     asset_today_sell = position["当日卖出"]
-                    last_price = r.hget("THS:price", asset_code)
+                    last_price = r.hget("THS:price", asset_code) # 从 Redis 中获取缓存价格
                     if last_price == None or float(last_price) < 0.1:
-                        last_price = asset_market_price
-                        r.hset("THS:price", asset_code, asset_market_price)
+                        last_price = asset_market_price # 市价
+                        r.hset("THS:price", asset_code, asset_market_price) # 更新缓存价格
                         print(asset_order, asset_code, asset_name, asset_balance, asset_market_price, asset_value)
                     sell_rate = 1.0161
-                    if "ETF" in asset_name:
+                    if "ETF" in asset_name: # ETF 场内基金
                         if asset_market_price > 5: sell_rate = 1.0331
                         elif asset_market_price > 4: sell_rate = 1.0248
                         elif asset_market_price > 3: sell_rate = 1.0198
@@ -169,8 +169,8 @@ while True:
                     bid_price = asset_market_price; ask_price = asset_market_price
                     data = quotation.real(asset_code)
                     if data and data[asset_code]:
-                        bid1 = float(data[asset_code]["bid1"]) # 买一
-                        ask1 = float(data[asset_code]["ask1"]) # 卖一
+                        bid1 = float(data[asset_code]["bid1"]) # 买一价
+                        ask1 = float(data[asset_code]["ask1"]) # 卖一价
                         if bid1 > 0: bid_price = bid1
                         if ask1 > 0: ask_price = ask1
                     now = datetime.now()
@@ -179,7 +179,7 @@ while True:
                         bid_price = truncate(bid_price, 2, 'float')
                         ask_price = truncate(ask_price, 2, 'float')
                     if bid_price > sell_price * 1.5 or ask_price < buy_price / 1.5: # 价格偏差过大
-                        r.hdel("THS:price", asset_code)
+                        r.hdel("THS:price", asset_code) # 删除缓存价格
                     elif bid_price > sell_price: # 卖出
                         while amount > 100 and asset_available < amount: amount -= 100
                         while amount > 100 and asset_balance - amount < keep_quantity: amount -= 100
