@@ -1,8 +1,7 @@
 ﻿// 🧪 使用方式：
 // 打开 Pionex 并登录页面：https://www.pionex.com/zh-CN/structured-finance/running
 // 在浏览器按 F12 → Console 粘贴代码回车
-// baseUrl 需修改替换
-window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/?client_id=pionex_web_20250722.297.7d0285d&device_id=38cba39a-bc51-4b77-bf4c-4c0466de8209&fp_did=2d6ba72529b4c9aec3d6a809135b88f4&fpp_did=h16jhN0wvJ3mIhyOvFlQ&app_ver=20250722.297.7d0285d&os=web&tz_name=Asia%2FShanghai&tz_offset=28800&sys_lang=zh-CN&app_lang=zh-CN"
+window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/"
 
 if (!window.inited) (function() {
   const originalOpen = XMLHttpRequest.prototype.open;
@@ -30,13 +29,14 @@ if (!window.inited) (function() {
     const headers = requestHeaders.get(this) || {};
     const auth = headers["Authorization"];
 
-    if (url.includes("/dual/index") && auth) {
+    if (url.includes("/dual/index/") && auth) {
       // console.log("🔍 Intercepted /dual/index Authorization:");
       // console.log("🔐 Authorization:", auth);
       // console.log("🌍 URL:", url);
       // 可选：复制到剪贴板
       // navigator.clipboard.writeText(auth);
       window.Authorization = auth
+      window.baseUrl = url.replace("/dual/index/", "/structured/invest/records/").replace(/&base_quote=.*/ig, "")
     }
 
     return originalSend.apply(this, arguments);
@@ -84,6 +84,9 @@ setTimeout(async () => {
     let income = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.income || 0), 0);
     let uincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.unsettle_income || 0), 0);
     let cincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.cycle_income || 0), 0);
+    
+    let tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    let tincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time).toISOString().startsWith(tomorrow) ? sum + parseFloat(r.data.auto_static.unsettle_income || 0) : sum, 0);
 
     // 输出明细表
     console.table(allRecords.map(r => ({
@@ -98,9 +101,10 @@ setTimeout(async () => {
     
     console.log(`\n✅ 共 ${allRecords.length} 条记录`);
     console.log(`💰 合计投入金额（运行中）：${total.toFixed(2)} USDT`);
-    console.log(`💰 预计下次收入（运行中）：${uincome.toFixed(2)} USDT`);
-    console.log(`💰 上次预计收入（运行中）：${cincome.toFixed(2)} USDT`);
-    console.log(`💰 预计结算收入（运行中）：${income.toFixed(2)} USDT`);
+    console.log(`💰 预计明日结算（运行中）：${tincome.toFixed(2)} USDT`);
+    console.log(`💰 预计下次结算（运行中）：${uincome.toFixed(2)} USDT`);
+    console.log(`💰 上次预计结算（运行中）：${cincome.toFixed(2)} USDT`);
+    console.log(`💰 全部预计结算（运行中）：${income.toFixed(2)} USDT`);
 }, 5000);
 
 window.inited = true
