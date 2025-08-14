@@ -85,8 +85,8 @@ setTimeout(async () => {
     let uincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.unsettle_income || 0), 0);
     let cincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.cycle_income || 0), 0);
     
-    let tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-    let tincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time).toISOString().startsWith(tomorrow) ? sum + parseFloat(r.data.auto_static.unsettle_income || 0) : sum, 0);
+    let tomorrow = new Date().setHours(0,0,0,0) + 2 * 86400000;
+    let tincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time) < tomorrow ? sum + parseFloat(r.data.auto_static.unsettle_income || 0) : sum, 0);
 
     // 输出明细表
     console.table(allRecords.map(r => ({
