@@ -85,7 +85,7 @@ setTimeout(async () => {
     let uincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.unsettle_income || 0), 0);
     let cincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.cycle_income || 0), 0);
     
-    let tomorrow = new Date().setHours(0,0,0,0) + 2 * 86400000;
+    let tomorrow = new Date().setHours(0,0,0,0) + 86400000;
     let tincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time) < tomorrow ? sum + parseFloat(r.data.auto_static.unsettle_income || 0) : sum, 0);
 
     // 输出明细表
@@ -101,8 +101,8 @@ setTimeout(async () => {
     
     console.log(`\n✅ 共 ${allRecords.length} 条记录`);
     console.log(`💰 合计投入金额（运行中）：${total.toFixed(2)} USDT`);
-    console.log(`💰 预计明日结算（运行中）：${tincome.toFixed(2)} USDT`);
-    console.log(`💰 预计下次结算（运行中）：${uincome.toFixed(2)} USDT`);
+    console.log(`💰 预计16点结算（运行中）：${tincome.toFixed(2)} USDT`);
+    console.log(`💰 预计到期结算（运行中）：${uincome.toFixed(2)} USDT`);
     console.log(`💰 上次预计结算（运行中）：${cincome.toFixed(2)} USDT`);
     console.log(`💰 全部预计结算（运行中）：${income.toFixed(2)} USDT`);
 }, 5000);
