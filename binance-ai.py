@@ -106,7 +106,7 @@ def subscribe_simple_earn_flexible_product(product_id, amount, copy = False):
 
 # 赎回理财
 def redeem_simple_earn_flexible_product(product_id, amount, copy = False):
-    api_key_ex = api_key; api_secret_ex = api_secret
+    api_key_ex = api_key; api_secret_ex = api_secret; time.sleep(0.5)
     if copy: api_key_ex = copy_key; api_secret_ex = copy_secret
     # 构建请求参数
     params = {
