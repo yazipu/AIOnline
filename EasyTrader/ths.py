@@ -1,4 +1,5 @@
-import os, time, redis, traceback, random
+import os, time, redis, traceback, randoms
+import pandas_market_calendars as mcal
 from chinese_calendar import is_workday
 from datetime import datetime, time as time1
 
@@ -29,6 +30,12 @@ def isTradeDay(date = datetime.now()):
             return True
     return False
 
+# 判断所给日期是否为A股交易日
+def isTradeDayEx(date = datetime.now()):
+    calendar = mcal.get_calendar('XSHG')    # A股
+    schedule = calendar.schedule(start_date=date.date(), end_date=date.date())
+    return not schedule.empty               # 如果当天没有开放时间，则表示未开盘
+
 # 判断所给时间是否为交易时间
 def isTradingTime(now = datetime.now()):
     now_time = now.time()
@@ -54,20 +61,21 @@ symbols = {
 
 # 同花顺xiadan.exe路径
 xiadan_path = 'C:\\THS\\xiadan.exe'
-os.system("taskkill /IM xiadan.exe > NUL 2> NUL")
+os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
 user = None; cnt = 0
 while True:
     try:
         # 是否交易日，是否交易时间
         now = datetime.now(); buy_count = sell_count = 0
-        # now = datetime.strptime("2024-06-10 10:00:00", "%Y-%m-%d %H:%M:%S")
-        is_trade_day = isTradeDay(now)
+        # now = datetime.strptime("2025-08-25 10:00:00", "%Y-%m-%d %H:%M:%S")
+        is_trade_day = isTradeDayEx(now)
         is_trade_time = isTradingTime(now)
         if not is_trade_day or not is_trade_time:
             is_trade_time_815 = time1(8,15,0) < now.time() < time1(15,0,0)
             sleep_time = 360 if is_trade_day and is_trade_time_815 else 3600
             print_time("是否交易日", is_trade_day, "是否交易时间", is_trade_time, "休息", sleep_time, "秒")
             if not is_trade_time_815 and user != None:
+                os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
                 user.exit(); user = None; cnt = 0
                 print_time("退出同花顺...")
             time.sleep(sleep_time)
@@ -76,11 +84,14 @@ while True:
 
         # 启动同花顺：xiadan.exe
         if cnt == 0:
-            print_time("启动同花顺", xiadan_path)
+            print_time("启动客户端", xiadan_path)
             os.system(f'start %s' % xiadan_path)
             time.sleep(60)  # 等待同花顺客户端启动
             user = easytrader.use('ths')
             user.connect(xiadan_path)
+            # user = easytrader.use('universal_client')
+            # user = easytrader.use('yh_client')
+            # user.prepare(user='', password='', exe_path=xiadan_path)
 
         # 默认获取 Grid 数据的策略是通过剪切板拷贝
         user.grid_strategy = grid_strategies.Copy
@@ -220,6 +231,7 @@ while True:
     cnt += 1
     if cnt >= 3 and user != None:
         # 五、退出客户端软件
+        os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
         user.exit(); user = None; cnt = 0
         print_time("退出同花顺...")
 

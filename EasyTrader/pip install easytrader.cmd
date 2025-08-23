@@ -8,6 +8,7 @@ python.exe -m pip install --upgrade pip
 pip --default-timeout=600 install redis
 pip --default-timeout=600 install pywin32
 pip --default-timeout=600 install pandas==2.0.3
+pip --default-timeout=600 install pandas_market_calendars
 pip --default-timeout=600 install easytrader
 pip --default-timeout=600 install easyquotation
 pip --default-timeout=600 install -U chinesecalendar
