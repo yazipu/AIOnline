@@ -1,4 +1,4 @@
-import os, time, redis, traceback, randoms
+import os, time, redis, traceback, random
 import pandas_market_calendars as mcal
 from chinese_calendar import is_workday
 from datetime import datetime, time as time1
@@ -46,6 +46,11 @@ def print_time(*messages):
     current_time = time.strftime("%Y-%m-%d %H:%M:%S")
     print(current_time, *messages)
 
+# 关闭进程
+def taskkill(user=None, process_name="xiadan.exe", sleep_time = 3):
+    os.system(f"taskkill /IM %s > NUL 2> NUL" % process_name); time.sleep(sleep_time)
+    if user: user.exit()
+
 # 连接Redis...
 print_time("连接Redis...")
 pool = redis.ConnectionPool(host='localhost',port=6379,password='tKwEuEpNUejZzaDauDB',db=0,decode_responses=True)
@@ -61,7 +66,7 @@ symbols = {
 
 # 同花顺xiadan.exe路径
 xiadan_path = 'C:\\THS\\xiadan.exe'
-os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
+taskkill(process_name="xiadan.exe", sleep_time = 1)
 user = None; cnt = 0
 while True:
     try:
@@ -75,8 +80,8 @@ while True:
             sleep_time = 360 if is_trade_day and is_trade_time_815 else 3600
             print_time("是否交易日", is_trade_day, "是否交易时间", is_trade_time, "休息", sleep_time, "秒")
             if not is_trade_time_815 and user != None:
-                os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
-                user.exit(); user = None; cnt = 0
+                taskkill(user, process_name = "xiadan.exe", sleep_time = 3)
+                user = None; cnt = 0
                 print_time("退出同花顺...")
             time.sleep(sleep_time)
             continue
@@ -231,8 +236,8 @@ while True:
     cnt += 1
     if cnt >= 3 and user != None:
         # 五、退出客户端软件
-        os.system("taskkill /IM xiadan.exe > NUL 2> NUL"); time.sleep(3)
-        user.exit(); user = None; cnt = 0
+        taskkill(user, process_name = "xiadan.exe", sleep_time = 3)
+        user = None; cnt = 0
         print_time("退出同花顺...")
 
     # 休息时间
