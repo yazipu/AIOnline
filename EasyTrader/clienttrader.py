@@ -461,7 +461,7 @@ class ClientTrader(IClientTrader):
         self._type_edit_control_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
 
         # wait security input finish
-        self.wait(0.25)
+        self.wait(0.5)
 
         # 设置交易所
         if security.lower().startswith("sz"):
@@ -469,7 +469,7 @@ class ClientTrader(IClientTrader):
         if security.lower().startswith("sh"):
             self._set_stock_exchange_type("上海Ａ股")
 
-        self.wait(0.25)
+        self.wait(0.5)
 
         self._type_edit_control_keys(
             self._config.TRADE_PRICE_CONTROL_ID,
