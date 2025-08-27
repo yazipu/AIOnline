@@ -202,9 +202,10 @@ while True:
                         print_time(asset_order, "卖出", asset_code, asset_name, bid_price, last_price, "->", sell_price, amount, round(cash_balance,2))
                         # 实际数量 > 最小持仓数量 and 可用余额 > 下单数量 and 市值 > 最小持仓金额
                         if asset_balance - amount >= keep_quantity and asset_available >= amount and asset_value > keep_amount:
-                            if now.time() >= time1(9,30,0): cash_balance += bid_price * amount; onhand_balance -= bid_price * amount
-                            # user.sell(asset_code, price=bid_price, amount=amount) # 限价卖出
-                            user.market_sell(asset_code, amount, limit_price=bid_price) # 市价卖出
+                            if now.time() >= time1(9,30,0):
+                                cash_balance += bid_price * amount; onhand_balance -= bid_price * amount
+                                user.market_sell(asset_code, amount, limit_price=bid_price) # 市价卖出
+                            else: user.sell(asset_code, price=bid_price, amount=amount) # 限价卖出
                             r.hset("THS:price", asset_code, sell_price); sell_count += 1 # time.sleep(0.2); # user.refresh();
                         elif now.time() >= time1(9,25,0):
                             print("持仓不足", asset_code, asset_name, asset_balance, asset_available, asset_value)
@@ -214,8 +215,8 @@ while True:
                         print_time(asset_order, "买入", asset_code, asset_name, ask_price, last_price, "->", buy_price, amount, round(cash_balance,2))
                         if cash_balance - keep_cash > ask_price * amount: # 可用金额 - 保持余额 > 买入金额
                             cash_balance -= ask_price * amount; onhand_balance += ask_price * amount
-                            # user.buy(asset_code, price=ask_price, amount=amount) # 限价买入
-                            user.market_buy(asset_code, amount, limit_price=ask_price) # 市价买入
+                            if now.time() >= time1(9,30,0): user.market_buy(asset_code, amount, limit_price=ask_price) # 市价买入
+                            else: user.buy(asset_code, price=ask_price, amount=amount) # 限价买入
                             r.hset("THS:price", asset_code, buy_price); buy_count += 1 # time.sleep(0.2); # user.refresh();
                         else: print("余额不足，请入金，当前余额：", round(cash_balance,2))
 
