@@ -1,18 +1,18 @@
 ﻿// 🧪 使用方式：
 // 打开 Pionex 并登录页面：https://www.pionex.com/zh-CN/structured-finance/running
 // 在浏览器按 F12 → Console 粘贴代码回车
-window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/"
+window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/invest/records/";
 
-if (!window.inited) (function() {
-  const originalOpen = XMLHttpRequest.prototype.open;
-  const originalSend = XMLHttpRequest.prototype.send;
-  const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+(function() {
+  window.originalOpen = window.originalOpen||XMLHttpRequest.prototype.open;
+  window.originalSend = window.originalSend||XMLHttpRequest.prototype.send;
+  window.originalSetRequestHeader = window.originalSetRequestHeader||XMLHttpRequest.prototype.setRequestHeader;
 
   const requestHeaders = new WeakMap();
 
   XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
     this._url = url;
-    return originalOpen.apply(this, arguments);
+    return window.originalOpen.apply(this, arguments);
   };
 
   XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
@@ -21,7 +21,7 @@ if (!window.inited) (function() {
     }
     const headers = requestHeaders.get(this);
     headers[header] = value;
-    return originalSetRequestHeader.apply(this, arguments);
+    return window.originalSetRequestHeader.apply(this, arguments);
   };
 
   XMLHttpRequest.prototype.send = function(body) {
@@ -39,7 +39,7 @@ if (!window.inited) (function() {
       window.baseUrl = url.replace("/dual/index/", "/structured/invest/records/").replace(/&base_quote=.*/ig, "")
     }
 
-    return originalSend.apply(this, arguments);
+    return window.originalSend.apply(this, arguments);
   };
 })();
 setTimeout(async () => {
@@ -106,5 +106,3 @@ setTimeout(async () => {
     console.log(`💰 上次预计结算（运行中）：${cincome.toFixed(2)} USDT`);
     console.log(`💰 全部预计结算（运行中）：${income.toFixed(2)} USDT`);
 }, 5000);
-
-window.inited = true
