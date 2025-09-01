@@ -80,20 +80,24 @@ setTimeout(async () => {
     // 合计金额
     let total = allRecords.reduce((sum, r) => sum + parseFloat(r.data.origin_invest_amount || 0), 0);
     let income = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.income || 0), 0);
+    let aincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.total_balance || 0) - parseFloat(r.data.latest_hour_balance.invest_amount || 0), 0);
     // let fincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time) > from_date ? sum + parseFloat(r.data.auto_static.income || 0) : sum, 0);
 
     // 输出明细表
     console.table(allRecords.map(r => ({
         币种: r.data.base,
         开单金额: r.data.origin_invest_amount,
-        结算收入: r.data.auto_static.income,
+        预计结算: (r.data.latest_hour_balance.total_balance - r.data.latest_hour_balance.invest_amount).toFixed(2),
+        实际结算: r.data.auto_static.income,
         创建时间: new Date(r.data.create_time).toLocaleString(),
         结算时间: new Date(r.data.auto_static.static_time).toLocaleString(),
     })));
     
-    console.log(`\n✅ 共 ${allRecords.length} 条记录`);
+    console.log(`\n✅ 共 ${days} 天 ${allRecords.length} 条记录`);
     console.log(`💰 累计开单金额：${total.toFixed(2)} USDT`);
-    console.log(`💰 累计结算金额：${income.toFixed(2)} USDT`);
+    console.log(`💰 预计结算金额：${aincome.toFixed(2)} USDT`);
+    console.log(`💰 实际结算金额：${income.toFixed(2)} USDT`);
 }, 5000);
 
-let from_date = new Date().setHours(0,0,0,0) - 30 * 86400000;
+let days = 30;
+let from_date = new Date().setHours(0,0,0,0) - days * 86400000;
