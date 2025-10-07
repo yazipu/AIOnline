@@ -23,9 +23,9 @@ symbols = {
     'INTC': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ','st':0 }, # 英特尔
     # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70, 'x': 'NASDAQ' }, # 纳斯达克100
     'MARA': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 比特币挖矿
-    'RKLB': { 'buy_value': 790, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 火箭实验室
+    'RKLB': { 'buy_value': 790, 'trade_amount': 59, 'market': 'US', 'x': 'NASDAQ' }, # 火箭实验室
     'SMCI': { 'buy_value': 890, 'trade_amount': 77, 'market': 'US', 'x': 'NASDAQ' }, # 超微电脑
-    'TQQQ': { 'buy_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ
+    'TQQQ': { 'buy_value': 1020, 'trade_amount': 139, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ
     
     # 纽交所
     'F': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 福特汽车
@@ -41,8 +41,8 @@ symbols = {
     # ETF 指数基金
     # 'GLD': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 256, 'market': 'US', 'x': 'ARCA' }, # 黄金
     # 'USO': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'ARCA' }, # 石油
-    'GDXU': { 'buy_value': 490, 'trade_amount': 49, 'market': 'US', 'x': 'ARCA' }, # 金矿3倍看涨
-    'KORU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 韩国3倍看涨
+    'GDXU': { 'buy_value': 590, 'trade_amount': 249, 'market': 'US', 'x': 'ARCA' }, # 金矿3倍看涨
+    'KORU': { 'buy_value': 490, 'trade_amount': 139, 'market': 'US', 'x': 'ARCA' }, # 韩国3倍看涨
     'RETL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 零售3倍看涨
     'SOXL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 半导体3倍看涨
     'WEBL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 互联网3倍看涨
@@ -50,6 +50,12 @@ symbols = {
     # 'WTIU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 原油3倍看涨
     'PILL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 医药3倍看涨
     'DRN': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 房地产3倍看涨
+    # 'JETU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 航空公司3倍看涨
+    # 'OILU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 勘探和生产3倍看涨
+    # 'TYD': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 7-10年债券3倍看涨
+    'UMDD': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 标普中盘400三倍看涨
+    'MEXX': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 墨西哥IMI指数三倍看涨
+    # 'WANT': { 'buy_value': 490, 'trade_amount': 59, 'market': 'US', 'x': 'ARCA' }, # 非必需消费品三倍看涨
 
 }
 
@@ -132,11 +138,11 @@ def get_bid_ask(symbol):
     ask = stock.info['ask'] if "ask" in stock.info else 0
     return bid, ask
 
-def get_available_funds():
+def get_cash_balance():
     """ 获取账户可用资金 """
     account_summary = ib.accountSummary()
     for item in account_summary:
-        if item.tag == 'AvailableFunds':
+        if item.tag == 'CashBalance':
             return float(item.value)
     return 0.0  # 如果未找到，返回0
 
@@ -208,15 +214,15 @@ def manage_positions(positions, symbols, market_status):
             if quantity <= 0: print("trade_amount / ask_price <= 0"); continue
             required_funds = ask_price * quantity 
             # 获取可用资金
-            available_funds = get_available_funds()
-            if required_funds <= available_funds:
+            cash_balance = get_cash_balance()
+            if required_funds <= cash_balance:
                 print(f"市价买入 {quantity} 股的 {symbol}，价格: {ask_price}，金额：{truncate(required_funds, 2)}。")
                 order = MarketOrder('BUY', quantity) # order = LimitOrder("BUY", quantity, ask_price)
                 trade = ib.placeOrder(Stock(symbol, 'SMART', 'USD'), order)
                 ib.waitOnUpdate(); ib.sleep(1)
                 # print("trade", trade)
             else:
-                print(f"资金不足，无法买入 {symbol}。所需资金: {required_funds}, 可用资金: {available_funds}")
+                print(f"资金不足，无法买入 {symbol}。所需资金: {required_funds}, 可用资金: {cash_balance}")
 
         # 判断是否需要卖出
         elif bid_value >= sell_value:
@@ -241,8 +247,9 @@ try:
             # 简单获取美元可用余额和总市值
             available_funds = next((item.value for item in account_summary if item.tag == 'AvailableFunds' and item.currency == 'USD'), 0)
             net_liquidation = next((item.value for item in account_summary if item.tag == 'NetLiquidation' and item.currency == 'USD'), 0)
+            cash_balance = next((item.value for item in account_summary if item.tag == 'CashBalance' and item.currency == 'USD'), 0)
 
-            print(time.strftime("%Y-%m-%d %H:%M:%S"), f"可用余额: {available_funds} USD", f"总市值: {net_liquidation} USD")
+            print(time.strftime("%Y-%m-%d %H:%M:%S"), f"可用余额: {cash_balance} USD", f"总市值: {net_liquidation} USD")
 
             # 检查 美股、港股、A股 是否开盘
             market_status = { "US": False, "HK": False, "CN": False }
