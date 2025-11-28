@@ -424,6 +424,27 @@ def spot_trader_symbols(api_key, api_secret, api_passphrase, symbolList, setting
         print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
     return None
 
+# 获取交易对信息：https://www.bitget.com/zh-CN/api-doc/spot/market/Get-Symbols
+def spot_get_symbols(api_key, api_secret, api_passphrase, symbol = ""):
+    try:
+        base_url = 'https://api.bitget.com'
+        path = '/api/v2/spot/public/symbols'     
+        url = base_url + path
+        params = { }
+        if symbol: params["symbol"] = symbol
+        query_string = '&'.join([f"{k}={v}" for k, v in sorted(params.items())]) if params else ""
+        headers = get_bitget_headers(api_key, api_secret, api_passphrase, 'GET', path, query_string)
+        response = requests.get(url, headers=headers, params=params, timeout=(20,60))
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"失设置败: {response.status_code}, {response.text}")
+            return None
+    except Exception as e:
+        print(time.strftime("%Y-%m-%d %H:%M:%S"), f"Exception:", str(e))
+    return None
+
 # 是否开启带单
 def spot_trace_enable(spot_trace_list, symbol):
     trace_enable = ''
@@ -447,18 +468,18 @@ version = pybitget.__version__
 print(time.strftime("%Y-%m-%d %H:%M:%S"), f"python-bitget 当前版本 {version}")
 
 # 获取现货交易对精度
-result = client.spot_get_symbols()
+result = spot_get_symbols(api_key, api_secret, api_passphrase)
 if result != None and result["code"] == "00000":
     spot_symbols = result["data"]
     for symbol, values in symbols.items():
         values["priceScale"] = values["num_dp"] if "num_dp" in values else 0
         values["quantityScale"] = values["num_dp"] if "num_dp" in values else 0
-        if symbol in ["HIPPUSDT":] continue
+        if symbol == "HIPPUSDT": continue
         for spot_symbol in spot_symbols:
-            if symbol == spot_symbol["symbolName"]:
-                values["priceScale"] = int(spot_symbol["priceScale"])
-                if symbol in ["ZZZUSDT"]: continue
-                values["quantityScale"] = int(spot_symbol["quantityScale"])
+            if symbol == spot_symbol["symbol"]:
+                values["priceScale"] = int(spot_symbol["pricePrecision"])
+                if symbol == "ZZZUSDT": continue
+                values["quantityScale"] = int(spot_symbol["quantityPrecision"])
 # print("symbols", symbols)
 
 # 循环检测持仓并交易
