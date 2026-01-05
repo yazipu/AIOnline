@@ -144,7 +144,7 @@ while True:
                 try:
                     asset_value = position["市值"]
                     onhand_balance += asset_value
-                    now = datetime.now(); is_trade_day = isTradeDay(now)
+                    now = datetime.now(); is_trade_day = isTradeDayEx(now)
                     if not is_trade_day or now.time() < time1(9,15,0) or now.time() >= time1(14,59,50): continue
                     asset_order = position["序号"]
                     asset_code = position["证券代码"]
