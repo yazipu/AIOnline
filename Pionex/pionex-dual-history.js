@@ -42,6 +42,11 @@ window.baseUrl = "https://www.pionex.com/financial/api/fmapis/v1/structured/inve
     return window.originalSend.apply(this, arguments);
   };
 })();
+function delay(milliseconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    })
+}
 setTimeout(async () => {
     const baseUrl = window.baseUrl;
 
@@ -74,21 +79,21 @@ setTimeout(async () => {
 
         if (records[records.length-1].data.auto_static.static_time < from_date) break;
         if (!nextToken || page >= 1000) break;
-        page_token = nextToken;
+        page_token = nextToken; await delay(200);
     }
 
     // 合计金额
     let total = allRecords.reduce((sum, r) => sum + parseFloat(r.data.origin_invest_amount || 0), 0);
-    let income = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static.income || 0), 0);
-    let aincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance.total_balance || 0) - parseFloat(r.data.latest_hour_balance.invest_amount || 0), 0);
+    let income = allRecords.reduce((sum, r) => sum + parseFloat(r.data.auto_static?.income || 0), 0);
+    let aincome = allRecords.reduce((sum, r) => sum + parseFloat(r.data.latest_hour_balance?.total_balance || 0) - parseFloat(r.data.latest_hour_balance?.invest_amount || 0), 0);
     // let fincome = allRecords.reduce((sum, r) => new Date(r.data?.auto_static?.static_time) > from_date ? sum + parseFloat(r.data.auto_static.income || 0) : sum, 0);
 
     // 输出明细表
     console.table(allRecords.map(r => ({
         币种: r.data.base,
         开单金额: r.data.origin_invest_amount,
-        预计结算: (r.data.latest_hour_balance.total_balance - r.data.latest_hour_balance.invest_amount).toFixed(2),
-        实际结算: r.data.auto_static.income,
+        预计结算: (r.data.latest_hour_balance?.total_balance - r.data.latest_hour_balance?.invest_amount).toFixed(2),
+        实际结算: r.data.auto_static?.income,
         创建时间: new Date(r.data.create_time).toLocaleString(),
         结算时间: new Date(r.data.auto_static.static_time).toLocaleString(),
     })));
