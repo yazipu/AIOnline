@@ -24,13 +24,19 @@ symbols = {
     # 'QQQ': { 'buy_value': 910, 'sell_value': 1050, 'trade_amount': 70, 'x': 'NASDAQ' }, # 纳斯达克100
     'MARA': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 比特币挖矿
     'RKLB': { 'buy_value': 790, 'trade_amount': 59, 'market': 'US', 'x': 'NASDAQ' }, # 火箭实验室
-    'SMCI': { 'buy_value': 890, 'trade_amount': 77, 'market': 'US', 'x': 'NASDAQ' }, # 超微电脑
-    'TQQQ': { 'buy_value': 1020, 'trade_amount': 139, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ
+    'SMCI': { 'buy_value': 890, 'trade_amount': 59, 'market': 'US', 'x': 'NASDAQ' }, # 超微电脑
+    'TQQQ': { 'buy_value': 990, 'trade_amount': 59, 'market': 'US', 'x': 'NASDAQ' }, # 三倍做多QQQ（纳斯达克100）
+    'TSLG': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 二倍做多特斯拉
+    'AMDL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 二倍做多AMD
+    'CRCG': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 二倍做多CIRCLE
+    'CONL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 二倍做多COIN
+    'USAU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NASDAQ' }, # 美国黄金公司
     
     # 纽交所
     'F': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 福特汽车
     'GME': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 游戏驿站
     'KODK': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 柯达
+    'AG': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 第一银矿业
 
     # 中概股
     'BEKE': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'NYSE' }, # 贝壳
@@ -41,12 +47,12 @@ symbols = {
     # ETF 指数基金
     # 'GLD': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 256, 'market': 'US', 'x': 'ARCA' }, # 黄金
     # 'USO': { 'buy_value': 0, 'sell_value': 1020, 'trade_amount': 88, 'market': 'US', 'x': 'ARCA' }, # 石油
-    'GDXU': { 'buy_value': 590, 'trade_amount': 249, 'market': 'US', 'x': 'ARCA' }, # 金矿3倍看涨
-    'KORU': { 'buy_value': 490, 'trade_amount': 139, 'market': 'US', 'x': 'ARCA' }, # 韩国3倍看涨
+    'GDXU': { 'buy_value': 790, 'trade_amount': 199, 'market': 'US', 'x': 'ARCA' }, # 金矿3倍看涨
+    'KORU': { 'buy_value': 590, 'trade_amount': 169, 'market': 'US', 'x': 'ARCA' }, # 韩国3倍看涨
     'RETL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 零售3倍看涨
     'SOXL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 半导体3倍看涨
     'WEBL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 互联网3倍看涨
-    'YINN': { 'buy_value': 590, 'trade_amount': 59, 'market': 'US', 'x': 'ARCA' }, # 富时中国3倍看涨
+    'YINN': { 'buy_value': 590, 'trade_amount': 49, 'market': 'US', 'x': 'ARCA' }, # 富时中国3倍看涨
     # 'WTIU': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 原油3倍看涨
     'PILL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 医药3倍看涨
     'DRN': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 房地产3倍看涨
@@ -56,6 +62,9 @@ symbols = {
     'UMDD': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 标普中盘400三倍看涨
     'MEXX': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 墨西哥IMI指数三倍看涨
     # 'WANT': { 'buy_value': 490, 'trade_amount': 59, 'market': 'US', 'x': 'ARCA' }, # 非必需消费品三倍看涨
+    'SGOL': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 黄金实物信托基金
+    'PSLV': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 白银实物信托基金
+    'MSOX': { 'buy_value': 490, 'trade_amount': 39, 'market': 'US', 'x': 'ARCA' }, # 美国大麻二倍看涨
 
 }
 
