@@ -151,7 +151,7 @@ def get_cash_balance():
     """ 获取账户可用资金 """
     account_summary = ib.accountSummary()
     for item in account_summary:
-        if item.tag == 'CashBalance':
+        if item.tag == 'CashBalance' and item.currency == 'USD':
             return float(item.value)
     return 0.0  # 如果未找到，返回0
 
