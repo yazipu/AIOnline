@@ -27,7 +27,6 @@ symbols = {
     'BGBUSDT': { 'lead_price': 0.1, 'buy_value': 190, 'trade_amount': 11, 'top': 84,'st':0,'earn':0,'kv':30,'spot_only':1 },
 
     # 高单价暂时不带：获利了结，落袋为安
-    'GMTUSDT': { 'lead_price': 0.5, 'buy_value': 570, 'trade_amount': 30, 'profit_rate': 1.031, 'top': 118,'st':0 }, # 60 GMT
 
     # TOP 100
     'BTCUSDT': { 'lead_price': 138000, 'buy_value': 10150, 'trade_amount': 110, 'profit_rate': 1.011, 'top': 1, 'minStepVal': 0.001,'vb':0,'st':0 }, # 0.0002 BTC
@@ -40,29 +39,19 @@ symbols = {
     'CRVUSDT': { 'buy_value': 190, 'trade_amount': 11, 'top': 113 },
 
     # 带单交易对
-    'OPUSDT': { 'lead_price': 5, 'buy_value': 570, 'trade_amount': 30, 'top': 28 }, # 6 OP
-    'PYTHUSDT': { 'lead_price': 1, 'buy_value': 670, 'trade_amount': 35, 'profit_rate': 1.031, 'top': 113 }, # 35 PYTH
-    'LDOUSDT': { 'lead_price': 4.4, 'buy_value': 570, 'trade_amount': 30, 'top': 32 }, # 7 LDO
     'JSTUSDT': { 'lead_price': 0.7, 'buy_value': 950, 'trade_amount': 50, 'profit_rate': 1.025, 'top': 172 }, # 700 JST
-    'GMXUSDT': { 'lead_price': 130, 'buy_value': 570, 'trade_amount': 30, 'top': 119 }, # 0.4 GMX
     'CAKEUSDT': { 'lead_price': 6, 'buy_value': 570, 'trade_amount': 30, 'top': 79 }, # 5 CAKE
-    'STXUSDT': { 'lead_price': 4.4, 'buy_value': 570, 'trade_amount': 30, 'top': 39 }, # 7 STX
 
     # 减少带单，待观察
     'POLUSDT': { 'lead_price': 1, 'buy_value': 290, 'trade_amount': 15, 'top': 14,'st':0 }, # 15 POL
 
     # 获利了结，停止带单
-    # 'KEYUSDT': { 'lead_price': 0.088, 'buy_value': 190, 'trade_amount': 11, 'profit_rate': 1.051, 'top': 625,'st':1 }, # 2000 KEY
 
     # 停止买入
     'WLDUSDT': { 'lead_price': 1.1, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.041, 'top': 144 }, # 10 WLD
 
     # 暂停交易
-    'RONUSDT': { 'lead_price': 0.55, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'top': 101,'st':0 }, # 20 RON
- 
     # 清仓
-    # 'FLOKIUSDT': { 'lead_price': 0.0000111, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.033, 'top': 150,'st':4 }, # 400000 FLOKI
-    # 'SLPUSDT': { 'lead_price': 0.00111, 'buy_value': 0, 'sell_valuex': 210, 'trade_amount': 11, 'profit_rate': 1.031, 'top': 63,'st':4 },
     # 'XLMUSDT': { 'lead_price': 0.99, 'buy_value': 570, 'trade_amount': 30, 'top': 26,'st':4 }, # 165 XLM
 
     # 获利了结，停止带单
@@ -741,7 +730,7 @@ while True:
                     for order in order_list:
                         if order['symbol'] == symbol:
                             success, result = close_tracking_order_v2(api_key, api_secret, api_passphrase, symbol, [order['trackingNo']])
-                            if success: print(f"成功卖出: {symbol} {json.dumps(result, separators=(',', ':'))}"); time.sleep(0.5)
+                            if success: print(f"成功卖出: {symbol} {json.dumps(result, separators=(',', ':'))}"); time.sleep(11)
                 elif buy_value - virtual_buy_value >= 1: # 卖出现货
                     quantity = truncate(symbol_balance - virtual_balance, values['quantityScale'], 'float')
                     response = spot_place_order(api_key, api_secret, api_passphrase, symbol, 'sell', 'market', 'gtc', quantity)
