@@ -67,17 +67,12 @@ symbols = {
     'DOGEUSDT': { 'lead_price': 8.8, 'buy_value': 410, 'trade_amount': 23, 'profit_rate': 1.015, 'top': 10 },
     'SHIBUSDT': { 'lead_price': 0.0066, 'buy_value': 380, 'trade_amount': 23, 'top': 16 },
     
-    'ARBUSDT': { 'lead_price': 88.8, 'buy_value': 760, 'trade_amount': 23, 'top': 43 },
-    'OPUSDT': { 'lead_price': 99.9, 'buy_value': 380, 'trade_amount': 23, 'top': 28 },
-    'POLUSDT': { 'lead_price': 8.8, 'buy_value': 380, 'trade_amount': 23, 'top': 12 },
 
     'ADAUSDT': { 'lead_price': 8.8, 'buy_value': 460, 'trade_amount': 23, 'profit_rate': 1.015, 'top': 8 },
-    'AVAXUSDT': { 'lead_price': 880, 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.015, 'top': 9 },
     'BCHUSDT': { 'lead_price': 2888, 'buy_value': 410, 'trade_amount': 23, 'profit_rate': 1.015, 'top': 19 },
     'BSVUSDT': { 'lead_price': 880, 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.022, 'top': 42 },
     'DOTUSDT': { 'lead_price': 88, 'buy_value': 400, 'trade_amount': 23, 'top': 11 },
     'LTCUSDT': { 'lead_price': 888, 'buy_value': 400, 'trade_amount': 23, 'profit_rate': 1.015, 'top': 17 },
-    'TONUSDT': { 'lead_price': 88, 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.025, 'top': 15 },
 
     'FILUSDT': { 'lead_price': 66, 'buy_value': 380, 'trade_amount': 23, 'top': 34 },
     'LINKUSDT': { 'lead_price': 99, 'buy_value': 380, 'trade_amount': 23, 'top': 14 },
@@ -85,19 +80,9 @@ symbols = {
     'JSTUSDT': { 'lead_price': 0.88, 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.025, 'top': 172 },
     'TRXUSDT': { 'lead_price': 0.88, 'buy_value': 580, 'trade_amount': 33, 'top': 13,'vb':0 },
 
-    'APTUSDT': { 'lead_price': 88, 'buy_value': 380, 'trade_amount': 23, 'top': 31 },
-    'LDOUSDT': { 'lead_price': 88, 'buy_value': 400, 'trade_amount': 23, 'top': 38 },
-    'SUIUSDT': { 'lead_price': 88, 'buy_value': 380, 'trade_amount': 23, 'top': 50 },
-    'WLDUSDT': { 'lead_price': 88, 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.041, 'top': 144 },
-
     # 无带单交易对
-    # 'WINUSDT': { 'buy_value': 380, 'trade_amount': 23, 'profit_rate': 1.041, 'top': 375,'vb':0 },
-
     # ST
-    # 'AGIXUSDT': { 'lead_price': 0.001, 'buy_value': 380, 'trade_amount': 23, 'num_dp': 4, 'top': 132,'st':4 },
-
     # 下架交易对
-    # 'YFIIUSDT': { 'lead_price': 100, 'buy_value': 0, 'sell_valuex': 280, 'trade_amount': 23, 'profit_rate': 1.041, 'top': 627,'st':4 },
     
 }
 
