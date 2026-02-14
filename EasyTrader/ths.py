@@ -148,9 +148,10 @@ while True:
                     if not is_trade_day or now.time() < time1(9,15,0) or now.time() >= time1(14,59,50): continue
                     asset_order = position["序号"]
                     asset_code = position["证券代码"]
-                    if asset_code.startswith(('11','12')): continue # 跳过可转债
+                    if asset_code.startswith(('11','12','40')): r.hdel("THS:price", asset_code); continue # 跳过可转债, 40-已退市
                     if asset_code in symbols and "disabled" in symbols[asset_code]: r.hdel("THS:price", asset_code); continue
                     asset_name = position["证券名称"]
+                    if ("ST") in asset_name: r.hdel("THS:price", asset_code); continue # 跳过ST
                     asset_balance = position["实际数量"]
                     if asset_balance < 100: continue
                     asset_available = position["可用余额"]

@@ -281,7 +281,7 @@ class ClientTrader(IClientTrader):
                     break
                 except:
                     retry += 1
-                    self.wait(0.1)
+                    self.wait(0.1); time.sleep(0.5)
         self._set_market_trade_params(security, amount, limit_price=limit_price)
         self._submit_trade()
 
@@ -461,7 +461,7 @@ class ClientTrader(IClientTrader):
         self._type_edit_control_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
 
         # wait security input finish
-        self.wait(0.5)
+        self.wait(0.5); time.sleep(0.5)
 
         # 设置交易所
         if security.lower().startswith("sz"):
@@ -469,7 +469,7 @@ class ClientTrader(IClientTrader):
         if security.lower().startswith("sh"):
             self._set_stock_exchange_type("上海Ａ股")
 
-        self.wait(0.5)
+        self.wait(0.5); time.sleep(0.5)
 
         self._type_edit_control_keys(
             self._config.TRADE_PRICE_CONTROL_ID,
@@ -483,7 +483,7 @@ class ClientTrader(IClientTrader):
         self._type_edit_control_keys(
             self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount))
         )
-        self.wait(0.1)
+        self.wait(0.1); time.sleep(0.5)
         price_control = None
         if str(security).startswith("68"):  # 科创板存在限价
             try:
@@ -510,8 +510,8 @@ class ClientTrader(IClientTrader):
             ).set_edit_text(text)
         else:
             editor = self._main.child_window(control_id=control_id, class_name="Edit")
-            editor.select()
-            editor.type_keys(text)
+            editor.select(); time.sleep(0.5)
+            editor.type_keys(text); time.sleep(0.5)
 
     def type_edit_control_keys(self, editor, text):
         if not self._editor_need_type_keys:
